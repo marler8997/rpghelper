@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html><head>
+<title>rpghelper</title>
+</head><body>
+<input type="file" id="ConfigFileInput" name="file" />
+<pre id="LoadFileErrorPre" style="color:#a00"></pre>
+<pre id="LoadFileStatusPre"></pre>
+<pre id="CharacterPre"></pre>
+
+<script>
+
+function get(id) { return document.getElementById(id); }
+
+function render(data) {
+    html = '<h1>' + data.Name + '</h1>';
+    get('CharacterPre').innerHTML = html;
+}
+
+
+function setLoadStatus(msg) {
+    get('LoadFileErrorPre').innerText = '';
+    get('LoadFileStatusPre').innerText = msg;
+}
+function setLoadError(msg) {
+    get('LoadFileErrorPre').innerText = 'ERROR: ' + msg;
+    get('LoadFileStatusPre').innerText = '';
+}
+
+function BadConfigException(message) {
+    return new Error(message);
+}
+BadConfigException.prototype = Object.create(Error.prototype);
+
+function enforceProp(obj, name, context) {
+    if (name in obj) { return obj[name]; }
+    throw new BadConfigException(context + ', missing the "' + name + '" attribute')
+}
+
+function loadData(data) {
+    setLoadStatus('parsing config...');
+    try {
+        var context = 'At the top-level';
+        var system = enforceProp(data, 'System', context);
+        if (system == 'Pathfinder2e') {
+            // good
+        } else {
+            throw new BadConfigException('unknown System "' + system + '"');
+        }
+        render(data);
+        setLoadStatus(JSON.stringify(data));
+    } catch (e) {
+        setLoadError(e.message);
+    }
+}
+
+function configFileSelect(evt) {
+    var reader = new FileReader();
+    reader.onerror = function errorHandler(evt) {
+        switch(evt.target.error.code) {
+        case evt.target.error.NOT_FOUND_ERR:
+            setLoadError('File Not Found!');
+            break;
+        case evt.target.error.NOT_READABLE_ERR:
+            setLoadError('File is not readable');
+            break;
+        case evt.target.error.ABORT_ERR:
+            break; // noop
+        default:
+            setLoadError('An error occurred reading this file.');
+        };
+    };
+    reader.onloadstart = function(e) {
+        setLoadStatus('loading...');
+    };
+    reader.onload = function(e) {
+        var data;
+        try { data = JSON.parse(e.target.result); }
+        catch (e) { alert(e); }
+        loadData(data);
+    }
+    reader.readAsText(evt.target.files[0]);
+}
+
+document.getElementById('ConfigFileInput').addEventListener('change', configFileSelect, false);
+</script>
+</body></html>
