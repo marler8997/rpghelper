@@ -10,7 +10,7 @@ var abilities = [
     "charisma"
 ];
 
-function processOp(processedData, op)
+function analyzeOp(analyzedData, op)
 {
     type = enforceProp(op, 'type', 'Inside an op');
     context = "Inside op type '" + type + "'";
@@ -21,8 +21,8 @@ function processOp(processedData, op)
         if (type == abilities[i]) {
             var mod = enforceProp(op, 'mod', context);
             var reason = enforceProp(op, 'reason', context);
-            processedData[ability].value += mod;
-            processedData[ability].ops.push(op);
+            analyzedData[ability].value += mod;
+            analyzedData[ability].ops.push(op);
             return;
         }
     }
@@ -30,19 +30,22 @@ function processOp(processedData, op)
     } else if (type == 'hp') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
-        processedData.hp.max += mod;
-        processedData.hp.current += mod;
-        processedData.hp.ops.push(op);
+        analyzedData.hp.max += mod;
+        analyzedData.hp.current += mod;
+        analyzedData.hp.ops.push(op);
     } else if (type == 'speed') {
         var value = enforceProp(op, 'value', context);
         var reason = enforceProp(op, 'reason', context);
-        processedData.speed.value = value;
-        processedData.speed.ops.push(op);
+        analyzedData.speed.value = value;
+        analyzedData.speed.ops.push(op);
     } else if (type == 'language') {
         var name = enforceProp(op, 'name', context);
         var reason = enforceProp(op, 'reason', context);
-        processedData.languages.names.push(name);
-        processedData.languages.ops.push(op);
+        analyzedData.languages.names.push(name);
+        analyzedData.languages.ops.push(op);
+    } else if (type == 'ancestryFeat') {
+        var name = enforceProp(op, 'name', context);
+        analyzedData.ancestryFeats.push(name);
     } else {
         throw new BadConfigException('unknown op type "' + type + '"');
     }
@@ -76,7 +79,7 @@ go: function(jsonData) {
         throw new BadConfigException('unknown System "' + system + '"');
     }
     // TODO: get ancestry, generate ops from it
-    var processedData = {
+    var analyzedData = {
         "ignoreme":null
         ,"characterName":enforceProp(jsonData, 'characterName', context)
         ,"playerName":enforceProp(jsonData, 'playerName', context)
@@ -84,27 +87,29 @@ go: function(jsonData) {
         ,"ancestryAndHeritage":enforceProp(jsonData, 'ancestryAndHeritage', context)
         ,"background":enforceProp(jsonData, 'background', context)
         ,"class":enforceProp(jsonData, 'class', context)
+        ,"size":enforceProp(jsonData, 'size', context)
         ,"alignment":enforceProp(jsonData, 'alignment', context)
+        ,"traits":enforceProp(jsonData, 'traits', context)
         ,"deity":enforceProp(jsonData, 'deity', context)
         ,"hp": {
             "max": 0
             ,"current": 0
-            ,ops: []
+            ,"ops": []
         }
         ,"speed": {"value":0,ops:[]}
         ,"languages": {names:[],ops:[]}
-        ,ops:jsonData.ops
+        ,"ancestryFeats":[]
+        ,"ops":jsonData.ops
     };
-    var i = 0;
-    for (i = 0; i < abilities.length; i++) {
-        processedData[abilities[i]] = {"value":10, ops:[]};
+    for (var i = 0; i < abilities.length; i++) {
+        analyzedData[abilities[i]] = {"value":10, ops:[]};
     }
     var ops = enforceProp(jsonData, 'ops', context);
     var i = 0;
     for (i = 0; i < ops.length; i++) {
-        processOp(processedData, ops[i]);
+        analyzeOp(analyzedData, ops[i]);
     }
-    return processedData;
+    return analyzedData;
 }
 
 };

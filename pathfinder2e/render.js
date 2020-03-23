@@ -1,5 +1,39 @@
 var render = (function() {
 
+    /*
+function toTitleCase(s) {
+    s = str.toLowerCase().split(' ');
+    for (var i = 0; i < s.length; i++) {
+        s[i] = s[i].charAt(0).toUpperCase() + s[i].substring(1);
+    }
+    return s.join(' ');
+}
+*/
+var A_CHARCODE = 'A'.charCodeAt(0);
+var Z_CHARCODE = 'Z'.charCodeAt(0);
+function charCodeIsUpperCase(c) {
+    return c < Z_CHARCODE && c >= A_CHARCODE;
+}
+
+function camelCaseToDisplayName(s) {
+    if (s.length == 0) return "";
+    var nextPartIndex = 0;
+    var parts = [];
+    var prefix = '';
+    for (var i = 0;; i++) {
+        var atEnd = i >= s.length;
+        if (atEnd || charCodeIsUpperCase(s.charCodeAt(i))) {
+            parts.push(prefix +
+                s.substring(nextPartIndex, nextPartIndex + 1).toUpperCase() +
+                s.substring(nextPartIndex + 1, i))
+            if (atEnd) break;
+            nextPartIndex = i;
+            prefix = ' ';
+        }
+    }
+    return parts.join(' ');
+}
+
 function modifierString(mod) {
     if (mod >= 0) return "+" + mod;
     return mod.toString();
@@ -38,11 +72,6 @@ function opsToTextBlock(ops) {
     return text;
 }
 
-var ancestryAndHeritageMap = {
-    "ancientBloodedDwarf" : {
-        "displayName": "Ancient-Blooded Dwarf"
-    }
-};
 var abilityMap = {
     "strength": {
         "displayName": "STR",
@@ -75,11 +104,6 @@ function enforceProp(obj, name, context) {
     throw new analyze.RenderException(context + ' missing the "' + name + '" property')
 }
 
-function ancestryAndHeritageDisplayName(value) {
-    return enforceProp(ancestryAndHeritageMap, value, 'ancestryAndHeritageMap is').displayName;
-}
-
-
 return {
 
 opsToTextBlock: opsToTextBlock,
@@ -91,21 +115,25 @@ go: function(data) {
 
     html += '<div class="CharacterIdentityDiv">';
     html +=     '<div class="NameXpDiv">';
-    html +=         '<div class="FieldDiv characterNameDiv">'+ labelValue("Character Name", data.characterName) + '</div>';
-    html +=         '<div class="FieldDiv playerNameDiv">' + labelValue("Player Name", data.playerName) + '</div>';
-    html +=         '<div class="FieldDiv xpDiv">' + labelValue("Experience Points (XP)", "TODO") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv characterNameDiv">'+ labelValue("Character Name", data.characterName) + '</div>';
+    html +=         '<div class="RowDiv FieldDiv playerNameDiv">' + labelValue("Player Name", data.playerName) + '</div>';
+    html +=         '<div class="RowDiv FieldDiv xpDiv">' + labelValue("Experience Points (XP)", "TODO") + '</div>';
     html +=     '</div>';
     html +=     '<div class="AncestryDiv">';
-    html +=         '<div class="FieldDiv ancestryAndHeritageDiv">';
-    html +=             labelValue("Ancestry and Heritage", ancestryAndHeritageDisplayName(data.ancestryAndHeritage)) + '</div>';
-    html +=         '<div class="FieldDiv backgroundDiv">' + labelValue("Background", data.background) + '</div>';
-    html +=         '<div class="FieldDiv classDiv">' + labelValue("Class", data.class) + '</div>';
-    html +=         '<div class="FieldDiv miscDiv">' + labelValue("Size/Alignment/Traits", "TODO") + '</div>';
-    html +=         '<div class="FieldDiv deityDiv">' + labelValue("Deity", "TODO") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv ancestryAndHeritageDiv">';
+    html +=             labelValue("Ancestry and Heritage", camelCaseToDisplayName(data.ancestryAndHeritage)) + '</div>';
+    html +=         '<div class="RowDiv FieldDiv backgroundDiv">' + labelValue("Background", camelCaseToDisplayName(data.background)) + '</div>';
+    html +=         '<div class="RowDiv FieldDiv classDiv">' + labelValue("Class", camelCaseToDisplayName(data.class)) + '</div>';
+    html +=         '<div class="RowDiv SizeAlignmentTraitsDiv">';
+    html +=             '<div class="FieldDiv sizeDiv">' + labelValue("Size", data.size) + '</div>';
+    html +=             '<div class="FieldDiv alignmentDiv">' + labelValue("Alignment", "TODO") + '</div>';
+    html +=             '<div class="FieldDiv traitsDiv">' + labelValue("Traits", data.traits) + '</div>';
+    html +=         '</div>';
+    html +=         '<div class="RowDiv FieldDiv deityDiv">' + labelValue("Deity", "TODO") + '</div>';
     html +=     '</div>';
     html +=     '<div class="LevelDiv">';
-    html +=         '<div class="FieldDiv levelDiv">' + labelValue("Level", "??") + '</div>';
-    html +=         '<div class="FieldDiv heroPointsDiv">' + labelValue("Hero Points", "??") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv levelDiv">' + labelValue("Level", "1") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv heroPointsDiv">' + labelValue("Hero Points", "?") + '</div>';
     html +=     '</div>';
     html += '</div>';
     html += '<div class="hpDiv">HP: ' + data.hp.current + " / ";
@@ -134,6 +162,31 @@ go: function(data) {
 
 
     html += '<h5>Languages: ' + renderOpsTooltip(data.languages.names.join(", "), data.languages.ops) + '</h5>';
+
+    html += '<div class="FeatsDiv">';
+    html += '<div class="FeatsLeftDiv">';
+    html +=     '<div class="AncestryFeatsAndAbilitiesBlockDiv BlockDiv">';
+    html +=         '<div class="BlockTitleDiv">Ancestry Feats And Abilities</div>';
+    html +=         '<div class="AncestryFeatsAndAbilitiesContentDiv BlockContentDiv">';
+    for (var i = 0; i < data.ancestryFeats.length; i++) {
+        var feat = data.ancestryFeats[i];
+        html +=         '<div class="FieldDiv">' + feat + '</div>';
+    }
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    html += '<div class="FeatsRightDiv">';
+    html +=     '<div class="ClassFeatsAndAbilitiesBlockDiv BlockDiv">';
+    html +=         '<div class="BlockTitleDiv">Class Feats And Abilities</div>';
+    html +=         '<div class="ClassFeatsAndAbilitiesContentDiv BlockContentDiv">';
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    html += '</div>'; // FeatsDiv
+
+
+
+
     html += '</div>'; // CharacterDiv
     return html;
 }
