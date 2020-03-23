@@ -184,6 +184,34 @@ go: function(data) {
     html += '</div>';
     html += '</div>'; // FeatsDiv
 
+    // TODO: fully implement skills
+    html += '<br/><br/>';
+    html += '<div class="SkillsBlockDiv BlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Skills</div>';
+    html +=     '<div class="SkillsContentDiv BlockContentDiv">';
+    for (var skillName in common.skillDefs) {
+        var skill = data[skillName];
+        var skillDef = common.skillDefs[skillName];
+        if (skill.proficiency == "untrained" && skillDef.optional)
+            continue;
+        html += '<div class="TempSkillRow"><span class="SkillLabel">' + camelCaseToDisplayName(skillName) + '</span>';
+        html += renderOpsTooltip(skill.proficiency, skill.ops);
+        html += '</div>';
+    }
+    html +=     '</div>';
+    html += '</div>'; // SkillsDiv
+
+    // TODO: fully implement reactions info
+    html += '<br/><br/>';
+    html += '<div class="ReactionsBlockDiv BlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Reactions</div>';
+    html +=     '<div class="ReactionsContentDiv BlockContentDiv">';
+    for (var i = 0; i < data.reactions.names.length; i++) {
+        var name = data.reactions.names[i];
+        html +=         '<div>' + name + '</div>';
+    }
+    html +=     '</div>';
+    html += '</div>'; // ReactionsDiv
 
 
 

@@ -15,10 +15,9 @@ function analyzeOp(analyzedData, op)
     type = enforceProp(op, 'type', 'Inside an op');
     context = "Inside op type '" + type + "'";
 
-    var i = 0;
-    for (i = 0; i < abilities.length; i++) {
-        var ability = abilities[i];
+    for (var i = 0; i < abilities.length; i++) {
         if (type == abilities[i]) {
+            var ability = abilities[i];
             var mod = enforceProp(op, 'mod', context);
             var reason = enforceProp(op, 'reason', context);
             analyzedData[ability].value += mod;
@@ -26,7 +25,18 @@ function analyzeOp(analyzedData, op)
             return;
         }
     }
+    for (var skillName in common.skillDefs) {
+        if (type == skillName) {
+            var proficiency = enforceProp(op, 'proficiency', context);
+            var reason = enforceProp(op, 'reason', context);
+            analyzedData[skillName].proficiency = proficiency;
+            analyzedData[skillName].ops.push(op);
+            return;
+        }
+    }
     if (false) {
+    } else if (type == 'comment') {
+        // ignore
     } else if (type == 'hp') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
@@ -46,6 +56,9 @@ function analyzeOp(analyzedData, op)
     } else if (type == 'ancestryFeat') {
         var name = enforceProp(op, 'name', context);
         analyzedData.ancestryFeats.push(name);
+    } else if (type == 'reaction') {
+        var name = enforceProp(op, 'name', context);
+        analyzedData.reactions.names.push(name);
     } else {
         throw new BadConfigException('unknown op type "' + type + '"');
     }
@@ -99,10 +112,14 @@ go: function(jsonData) {
         ,"speed": {"value":0,ops:[]}
         ,"languages": {names:[],ops:[]}
         ,"ancestryFeats":[]
+        ,"reactions": {names:[]}
         ,"ops":jsonData.ops
     };
     for (var i = 0; i < abilities.length; i++) {
         analyzedData[abilities[i]] = {"value":10, ops:[]};
+    }
+    for (var skillName in common.skillDefs) {
+        analyzedData[skillName] = {"proficiency":"untrained", ops:[]};
     }
     var ops = enforceProp(jsonData, 'ops', context);
     var i = 0;

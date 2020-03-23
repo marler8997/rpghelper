@@ -175,5 +175,23 @@ FeatsDiv
     margin:5px;
 }
 
+/*
+===============================================================================
+SkillsDiv
+===============================================================================
+*/
+.SkillsBlockDiv {
+    display:inline-block;
+    width:400px;
+}
+.TempSkillRow {
+    display:flex;
+}
+.TempSkillRow .SkillLabel {
+    width:100px;
+    margin-right:20px;
+    text-align:right;
+}
+
 
 .hpDiv { }
