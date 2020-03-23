@@ -5,7 +5,69 @@
     padding:15px;
 }
 
-/* The character sheet styles */
+/*
+===============================================================================
+Styles shared accross various sections/blocks
+===============================================================================
+*/
+.BlockDiv {
+    background: #222;
+    color: #ddd;
+}
+.BlockTitleDiv {
+    margin:0;
+    background:black;
+    color: #eee;
+    font-size: 24px;
+    text-align: center;
+}
+.BlockContentDiv {
+}
+.BlockRowDiv {
+    margin:10px 1px;
+    font-size: 30px;line-height:30px;
+}
+.ModifierSpan {
+    display:inline-block;
+    width: 40px;
+    text-align:center;
+    background:#eee; color: black;
+    border: 1px solid black;
+    border-radius: 6px;
+}
+.StatSpan {
+    display:inline-block;
+    width: 40px;
+    text-align:center;
+    background:#eee; color: black;
+    border: 1px solid black;
+}
+
+.Tooltip {
+    position: relative;
+    display: inline-block;
+}
+.Tooltip .TooltipText {
+    visibility: hidden;
+    background-color: #eee;
+    color: #222;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 15px;
+    position: absolute;
+    z-index: 1;
+}
+.Tooltip:hover .TooltipText {
+    visibility: visible;
+}
+
+
+/*
+===============================================================================
+CharacterIdentityDiv
+===============================================================================
+*/
 .CharacterIdentityDiv {
     display: flex;
 }
@@ -13,14 +75,15 @@
     margin-right: 2px;
 }
 .CharacterIdentityDiv .FieldDiv {
-    background:#eee;color:black; border: 1px solid #900;
+    background:#eee;color:black;
+    border: 1px solid #900;
     margin:2px 0;
 }
 
 .CharacterIdentityDiv .Label {
-    font-size:14px;
+    font-size:12px;
     display:block;
-    margin:3px;
+    margin:0 3px;
 }
 .CharacterIdentityDiv .Value {
     display:block;
@@ -37,21 +100,46 @@
     width:90px;
     text-align: center;
 }
-/*
-.CharacterIdentityDiv .NameXpDiv .FieldDiv {
-    margin:5px;padding:5px;
-    background:#eee;color:black; padding:10px; border: 1px solid #f00;
-}
-*/
+
 .characterNameDiv .Value { font-size: 60px; line-height: 60px; }
 .playerNameDiv .Value { font-size: 30px;  line-height: 30px; }
-.AncestryDiv .Value { font-size: 10px; line-height: 10px; }
-.deityDiv .Value { font-size: 8px; line-height: 8px; }
+.AncestryDiv .Value { font-size: 18px; line-height: 18px; }
+.deityDiv .Value { font-size: 12px; line-height: 12px; }
 
 .levelDiv .Label { margin:0; background:black; color: #eee; font-size: 30px; }
 .levelDiv .Value {font-size:40px; line-height: 40px; }
 .heroPointsDiv .Label { font-size: 16px; }
 .heroPointsDiv .Value {font-size:40px; line-height: 40px; }
+
+
+
+/*
+===============================================================================
+MainStatsDiv
+===============================================================================
+*/
+.MainStatsDiv {
+    display: flex;
+}
+
+.AbilityScoresContentDiv {
+    width:200px;
+}
+.AbilityScoresContentDiv .BlockRowDiv {
+    display: flex;
+    justify-content: space-between;
+}
+.AbilityScoresContentDiv .ScoreSpan {
+}
+
+
+
+
+
+
+
+
+
 
 
 .hpDiv { }

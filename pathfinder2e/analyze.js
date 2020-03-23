@@ -1,18 +1,28 @@
 var analyze = (function() {
 
+// TODO: put this somewhere common
+var abilities = [
+    "strength",
+    "dexterity",
+    "constitution",
+    "intelligence",
+    "wisdom",
+    "charisma"
+];
+
 function processOp(processedData, op)
 {
     type = enforceProp(op, 'type', 'Inside an op');
     context = "Inside op type '" + type + "'";
 
     var i = 0;
-    for (i = 0; i < attrs.length; i++) {
-        var attr = attrs[i];
-        if (type == attrs[i]) {
+    for (i = 0; i < abilities.length; i++) {
+        var ability = abilities[i];
+        if (type == abilities[i]) {
             var mod = enforceProp(op, 'mod', context);
             var reason = enforceProp(op, 'reason', context);
-            processedData[attr].value += mod;
-            processedData[attr].ops.push(op);
+            processedData[ability].value += mod;
+            processedData[ability].ops.push(op);
             return;
         }
     }
@@ -45,8 +55,12 @@ BadConfigException.prototype = Object.create(Error.prototype);
 
 function enforceProp(obj, name, context) {
     if (name in obj) return obj[name];
-    throw new analyze.BadConfigException(context + ', missing the "' + name + '" attribute')
+    throw new BadConfigException(context + ', missing the "' + name + '" attribute')
 }
+
+//function passthrough(dst, src, name, context) {
+//    dst[name] = enforceProp(src, name, context);
+//}
 
 return {
 
@@ -66,6 +80,12 @@ go: function(jsonData) {
         "ignoreme":null
         ,"characterName":enforceProp(jsonData, 'characterName', context)
         ,"playerName":enforceProp(jsonData, 'playerName', context)
+        ,"ancestry":enforceProp(jsonData, 'ancestry', context)
+        ,"ancestryAndHeritage":enforceProp(jsonData, 'ancestryAndHeritage', context)
+        ,"background":enforceProp(jsonData, 'background', context)
+        ,"class":enforceProp(jsonData, 'class', context)
+        ,"alignment":enforceProp(jsonData, 'alignment', context)
+        ,"deity":enforceProp(jsonData, 'deity', context)
         ,"hp": {
             "max": 0
             ,"current": 0
@@ -76,8 +96,8 @@ go: function(jsonData) {
         ,ops:jsonData.ops
     };
     var i = 0;
-    for (i = 0; i < attrs.length; i++) {
-        processedData[attrs[i]] = {"value":10, ops:[]};
+    for (i = 0; i < abilities.length; i++) {
+        processedData[abilities[i]] = {"value":10, ops:[]};
     }
     var ops = enforceProp(jsonData, 'ops', context);
     var i = 0;

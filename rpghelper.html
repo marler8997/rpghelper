@@ -22,28 +22,6 @@ td {
 #MainCharacterDiv {
     /*font-size:200px;*/ /* some ridiculous value so we make sure characterstyle.css sets this */
 }
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-}
-.tooltip .tooltiptext {
-  visibility: hidden;
-  background-color: #eee;
-  color: #222;
-  border: 1px solid #aaa;
-  border-radius: 6px;
-  padding: 15px;
-  font-size: 15px;
-
-  /* Position the tooltip */
-  position: absolute;
-  z-index: 1;
-}
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-}
-
 .OpsTooltipPre {
     font-weight:normal;
 }
@@ -55,16 +33,6 @@ td {
 <script>
 
     function get(id) { return document.getElementById(id); }
-
-    var attrs = [
-        "strength",
-        "dexterity",
-        "constitution",
-        "intelligence",
-        "wisdom",
-        "charisma"
-    ];
-
 
     function setLoadStatus(msg) {
         get('LoadFileErrorPre').innerText = '';
