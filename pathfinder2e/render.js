@@ -206,10 +206,13 @@ go: function(data) {
 
 
     html += '<div class="CharacterIdentityDiv">';
+    html +=     '<div class="ImageDiv">';
+    html +=         '<img src="' + data.image + '" alt="Character Image" />';
+    html +=     '</div>';
     html +=     '<div class="NameXpDiv">';
     html +=         '<div class="RowDiv FieldDiv characterNameDiv">'+ labelValue("Character Name", data.characterName) + '</div>';
     html +=         '<div class="RowDiv FieldDiv playerNameDiv">' + labelValue("Player Name", data.playerName) + '</div>';
-    html +=         '<div class="RowDiv FieldDiv xpDiv">' + labelValue("Experience Points (XP)", "TODO") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv xpDiv">' + labelValue("Experience Points (XP)", data.xp.value) + '</div>';
     html +=     '</div>';
     html +=     '<div class="AncestryDiv">';
     html +=         '<div class="RowDiv FieldDiv ancestryAndHeritageDiv">';
@@ -225,7 +228,7 @@ go: function(data) {
     html +=     '</div>';
     html +=     '<div class="LevelDiv">';
     html +=         '<div class="RowDiv FieldDiv levelDiv">' + labelValue("Level", "1") + '</div>';
-    html +=         '<div class="RowDiv FieldDiv heroPointsDiv">' + labelValue("Hero Points", "?") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv heroPointsDiv">' + labelValue("Hero Points", data.heroPoints.value) + '</div>';
     html +=     '</div>';
     html += '</div>';
     html += '<div class="hpDiv">HP: ' + data.hp.current + " / ";

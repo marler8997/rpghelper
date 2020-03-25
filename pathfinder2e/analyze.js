@@ -63,6 +63,11 @@ function analyzeOp(analyzedData, op)
     if (false) {
     } else if (type == 'comment') {
         // ignore
+    } else if (type == 'xp') {
+        var add = enforceProp(op, 'add', context);
+        var reason = enforceProp(op, 'reason', context);
+        analyzedData.xp.value += add;
+        analyzedData.xp.ops.push(op);
     } else if (type == 'hp') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
@@ -119,6 +124,7 @@ go: function(jsonData) {
         ,"level":1
         ,"characterName":enforceProp(jsonData, 'characterName', context)
         ,"playerName":enforceProp(jsonData, 'playerName', context)
+        ,"xp":{"value":0,"ops":[]}
         ,"ancestry":enforceProp(jsonData, 'ancestry', context)
         ,"ancestryAndHeritage":enforceProp(jsonData, 'ancestryAndHeritage', context)
         ,"background":enforceProp(jsonData, 'background', context)
@@ -126,25 +132,27 @@ go: function(jsonData) {
         ,"keyAbility":enforceProp(jsonData, 'keyAbility', context)
         ,"size":enforceProp(jsonData, 'size', context)
         ,"alignment":enforceProp(jsonData, 'alignment', context)
+        ,"image":enforceProp(jsonData, 'image', context)
         ,"traits":enforceProp(jsonData, 'traits', context)
         ,"deity":enforceProp(jsonData, 'deity', context)
+        ,"heroPoints":{"value":1,"ops":[]}
         ,"hp": {
             "max": 0
             ,"current": 0
             ,"ops": []
         }
-        ,"classDC":{"proficiency":"untrained",ops:[]}
-        ,"speed": {"value":0,ops:[]}
-        ,"languages": {names:[],ops:[]}
+        ,"classDC":{"proficiency":"untrained","ops":[]}
+        ,"speed": {"value":0,"ops":[]}
+        ,"languages": {names:[],"ops":[]}
         ,"ancestryFeats":[]
         ,"reactions": {names:[]}
         ,"ops":jsonData.ops
     };
     for (var i = 0; i < abilities.length; i++) {
-        analyzedData[abilities[i]] = {"score":10, ops:[]};
+        analyzedData[abilities[i]] = {"score":10, "ops":[]};
     }
     for (var skillName in common.skillDefs) {
-        analyzedData[skillName] = {"proficiency":"untrained", ops:[]};
+        analyzedData[skillName] = {"proficiency":"untrained", "ops":[]};
     }
     var ops = enforceProp(jsonData, 'ops', context);
     for (var i = 0; i < ops.length; i++) {

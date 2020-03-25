@@ -119,6 +119,9 @@ CharacterIdentityDiv
     margin:0 8px;
 }
 
+.CharacterIdentityDiv .ImageDiv {
+    width:200px;
+}
 .CharacterIdentityDiv .NameXpDiv {
     width:350px;
 }
