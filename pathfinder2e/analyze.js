@@ -10,6 +10,32 @@ var abilities = [
     "charisma"
 ];
 
+function maxProficiency(left, right) {
+    var leftDef = common.tryLookupProficiencyDef(left);
+    if (!leftDef) throw new Error('proficiency "' + left + '" does not exist');
+    var rightDef = common.tryLookupProficiencyDef(right);
+    if (!rightDef) throw new Error('proficiency "' + right + '" does not exist');
+    return (leftDef.bonus >= rightDef.bonus) ? left : right;
+}
+function setBiggerProficiency(obj, newProf) {
+    obj.proficiency = maxProficiency(obj.proficiency, newProf);
+}
+
+var BadConfigException = function (message) {
+    return new Error(message);
+}
+BadConfigException.prototype = Object.create(Error.prototype);
+
+function enforceProp(obj, name, context) {
+    if (name in obj) return obj[name];
+    throw new BadConfigException(context + ', missing the "' + name + '" attribute')
+}
+
+function enforceProficiency(name, context) {
+    if (common.tryLookupProficiencyDef(name)) return name;
+    throw new BadConfigException(context + ', found invalid proficiency name "' + name + '"');
+}
+
 function analyzeOp(analyzedData, op)
 {
     type = enforceProp(op, 'type', 'Inside an op');
@@ -46,7 +72,7 @@ function analyzeOp(analyzedData, op)
     } else if (type == 'classDC') {
         var proficiency = enforceProficiency(enforceProp(op, 'proficiency', context), context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.classDC.proficiency = proficiency;
+        setBiggerProficiency(analyzedData.classDC, proficiency);
         analyzedData.classDC.ops.push(op);
     } else if (type == 'speed') {
         var value = enforceProp(op, 'value', context);
@@ -69,24 +95,6 @@ function analyzeOp(analyzedData, op)
     }
 }
 
-var BadConfigException = function (message) {
-    return new Error(message);
-}
-BadConfigException.prototype = Object.create(Error.prototype);
-
-function enforceProp(obj, name, context) {
-    if (name in obj) return obj[name];
-    throw new BadConfigException(context + ', missing the "' + name + '" attribute')
-}
-
-function enforceProficiency(name, context) {
-    if (name == "untrained") return name;
-    if (name == "trained") return name;
-    if (name == "expert") return name;
-    if (name == "master") return name;
-    if (name == "legendary") return name;
-    throw new BadConfigException(context + ', found invalid proficiency name "' + name + '"');
-}
 
 //function passthrough(dst, src, name, context) {
 //    dst[name] = enforceProp(src, name, context);

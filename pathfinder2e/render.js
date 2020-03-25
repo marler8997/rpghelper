@@ -96,11 +96,8 @@ function enforceProp(obj, name, context) {
 }
 
 function getProficiencyModifier(level, prof, context) {
-    if (prof == "untrained") return 0;
-    if (prof == "trained") return 2 + level;
-    if (prof == "expert") return 4 + level;
-    if (prof == "master") return 6 + level;
-    if (prof == "legendary") return 8 + level;
+    var def = common.tryLookupProficiencyDef(prof);
+    if (def) return level * def.levelMult + def.bonus;
     throw new RenderException(context + ' found invalid proficiency "' + prof +
         '" expected untrained, trained, expert, master or legendary');
 }

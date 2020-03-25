@@ -1,6 +1,21 @@
 var common = (function() {
-    
+
+var proficiencyDefs = {
+    "untrained": {"levelMult":0,"bonus":0},
+    "trained"  : {"levelMult":1,"bonus":2},
+    "expert"   : {"levelMult":1,"bonus":4},
+    "master"   : {"levelMult":1,"bonus":6},
+    "legendary": {"levelMult":1,"bonus":8},
+};
+
 return {
+
+
+"proficiencyDefs": proficiencyDefs,
+
+"tryLookupProficiencyDef": function tryLookupProficiencyDef(name) {
+    return proficiencyDefs[name];
+},
 
 "skillDefs": {
     "perception": {"key":"wisdom","optional":false},
