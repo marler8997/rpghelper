@@ -43,6 +43,28 @@ td {
         get('LoadFileErrorPre').innerText = 'ERROR: ' + msg;
         get('LoadFileStatusPre').innerText = '';
     }
+
+    function loadFile(jsonString) {
+        //console.log(jsonString);
+        setLoadStatus('parsing config...');
+        var data;
+        try { data = JSON.parse(jsonString); }
+        catch (e) { setLoadError(e.message); throw e; }
+
+        setLoadStatus('analyzing config...');
+        var analyzeResult;
+        try { analyzeResult = analyze.go(data); }
+        catch (e) { setLoadError(e.message); throw e; }
+
+        setLoadStatus('rendering...');
+        var renderedHtml;
+        try { renderedHtml = render.go(analyzeResult); }
+        catch (e) { setLoadError(e.message); throw e; }
+        get('MainCharacterDiv').innerHTML = renderedHtml;
+        get('OpsDiv').innerHTML = render.opsToPre(data.ops);
+        setLoadStatus('');
+    }
+
     function configFileSelect(evt) {
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {
@@ -63,28 +85,35 @@ td {
             setLoadStatus('loading...');
         };
         reader.onload = function(e) {
-            setLoadStatus('parsing config...');
-            var data;
-            try { data = JSON.parse(e.target.result); }
-            catch (e) { setLoadError(e.message); throw e; }
-
-            setLoadStatus('analyzing config...');
-            var analyzeResult;
-            try { analyzeResult = analyze.go(data); }
-            catch (e) { setLoadError(e.message); throw e; }
-
-            setLoadStatus('rendering...');
-            var renderedHtml;
-            try { renderedHtml = render.go(analyzeResult); }
-            catch (e) { setLoadError(e.message); throw e; }
-            get('MainCharacterDiv').innerHTML = renderedHtml;
-            get('OpsDiv').innerHTML = render.opsToPre(data.ops);
-            setLoadStatus('');
+            loadFile(e.target.result);
         }
         reader.readAsText(evt.target.files[0]);
     }
+    function getUrlVars() {
+        var vars = {};
+        var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+            vars[key] = value;
+        });
+        return vars;
+    }
+    function downloadCharacter(url){
+        console.log('downloading character from: ' + url);
+        let request = new XMLHttpRequest();
+        request.open('GET', url);
+        request.responseType = 'text/json';
+        request.onload = function() {
+            loadFile(request.response);
+        };
+        request.send();
+    }
+    function bodyOnload() {
+        var urlVars = getUrlVars();
+        if ('file' in urlVars) {
+            downloadCharacter(urlVars.file);
+        }
+    }
 </script>
-</head><body>
+</head><body onload="bodyOnload()">
 <input type="file" id="ConfigFileInput" name="file" />
 <script>
     document.getElementById('ConfigFileInput').addEventListener('change', configFileSelect, false);
