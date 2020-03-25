@@ -78,7 +78,7 @@ td {
             try { renderedHtml = render.go(analyzeResult); }
             catch (e) { setLoadError(e.message); throw e; }
             get('MainCharacterDiv').innerHTML = renderedHtml;
-            get('OpsPre').innerHTML = render.opsToTextBlock(data.ops);
+            get('OpsDiv').innerHTML = render.opsToPre(data.ops);
             setLoadStatus('');
         }
         reader.readAsText(evt.target.files[0]);
@@ -98,6 +98,6 @@ td {
 <hr/>
 <div>
     <h1>Ops</h1>
-    <pre id="OpsPre"></pre>
+    <div id="OpsDiv"></div>
 </div>
 </body></html>

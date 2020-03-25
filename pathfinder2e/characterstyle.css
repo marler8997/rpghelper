@@ -5,6 +5,30 @@
     padding:15px;
 }
 
+
+
+.Tooltip {
+    position: relative;
+    display: inline-block;
+}
+.Tooltip .TooltipText {
+    visibility: hidden;
+    background-color: #eee;
+    color: #222;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 15px;
+    position: absolute;
+    left:50px; /* offset to move out of the way of the mouse */
+    z-index: 1;
+    opacity: 0.9;
+}
+.Tooltip:hover .TooltipText {
+    visibility: visible;
+}
+.OpsTooltipPre { text-align:left }
+
 /*
 ===============================================================================
 Styles shared accross various sections/blocks
@@ -23,44 +47,47 @@ Styles shared accross various sections/blocks
 }
 .BlockContentDiv {
 }
-.BlockRowDiv {
-    margin:10px 1px;
-    font-size: 30px;line-height:30px;
-}
-.ModifierSpan {
-    display:inline-block;
-    width: 40px;
-    text-align:center;
-    background:#eee; color: black;
-    border: 1px solid black;
-    border-radius: 6px;
-}
-.StatSpan {
-    display:inline-block;
-    width: 40px;
-    text-align:center;
-    background:#eee; color: black;
-    border: 1px solid black;
-}
 
-.Tooltip {
-    position: relative;
-    display: inline-block;
+/*
+===============================================================================
+StatRowDiv styles
+row with modifiers/proficiency score/etc, i.e. SkillRow ClassDCRow
+===============================================================================
+*/
+.StatRowDiv {
+    height:38px;
+    /*border:1px solid white; USE FOR DEBUGGING ALIGNMENT */
+    font-size:18px;
 }
-.Tooltip .TooltipText {
-    visibility: hidden;
-    background-color: #eee;
-    color: #222;
-    border: 1px solid #aaa;
-    border-radius: 6px;
-    padding: 10px;
-    font-size: 15px;
-    position: absolute;
-    z-index: 1;
+.StatRowDiv .Span {
+    display:inline-block;
+    height:38px;
+    vertical-align: middle;
 }
-.Tooltip:hover .TooltipText {
-    visibility: visible;
+.StatRowDiv .OneLine {
+    line-height:38px;
 }
+.StatRowDiv .TwoLine {
+    line-height:19px;
+}
+.StatRowDiv .BoxSpan {
+    border: 1px solid black;
+    height:36px; /* 38 - 2 for border */
+    background:#eee; color: black;
+    margin:0 1px;
+    text-align:center;
+}
+.StatRowDiv .TwoLineBoxSpan {
+    width: 40px;
+    font-size:15px;
+}
+.StatRowDiv .ModifierSpan {
+    width: 58px;
+    font-size:30px;
+}
+.Curved { border-radius: 6px; }
+.Centered { text-align:center; }
+
 
 
 /*
@@ -138,19 +165,26 @@ MainStatsDiv
 .MainStatsDiv {
     display: flex;
 }
-
-.AbilityScoresContentDiv {
-    width:200px;
+.MainStatsDiv .Column1 {
+    width:300px;
+    margin-right:10px;
 }
+.MainStatsDiv .Column2 {
+    width:400px;
+}
+
 .AbilityScoresContentDiv .BlockRowDiv {
     display: flex;
     justify-content: space-between;
+    padding:0 10px;
 }
-.AbilityScoresContentDiv .ScoreSpan {
+
+.AbilityScoresContentDiv .AbilityLabel {
+    font-size:30px;
 }
 
-
-
+.ClassDCBlockDiv { margin-top:10px; }
+.SavingThrowsBlockDiv { margin-top:10px; }
 
 /*
 ===============================================================================
@@ -184,13 +218,18 @@ SkillsDiv
     display:inline-block;
     width:400px;
 }
-.TempSkillRow {
+.SkillsBlockDiv .BlockRowDiv {
     display:flex;
+    line-height:40px;
 }
-.TempSkillRow .SkillLabel {
-    width:100px;
-    margin-right:20px;
+.SkillsBlockDiv .BlockRowDiv .SkillLabel {
+    width:120px;
     text-align:right;
+    margin-right:5px;
+    font-size:20px;
+}
+.SkillsBlockDiv .BlockRowDiv .Proficiency {
+    margin-right:10px;
 }
 
 

@@ -20,7 +20,7 @@ function analyzeOp(analyzedData, op)
             var ability = abilities[i];
             var mod = enforceProp(op, 'mod', context);
             var reason = enforceProp(op, 'reason', context);
-            analyzedData[ability].value += mod;
+            analyzedData[ability].score += mod;
             analyzedData[ability].ops.push(op);
             return;
         }
@@ -43,6 +43,11 @@ function analyzeOp(analyzedData, op)
         analyzedData.hp.max += mod;
         analyzedData.hp.current += mod;
         analyzedData.hp.ops.push(op);
+    } else if (type == 'classDC') {
+        var proficiency = enforceProficiency(enforceProp(op, 'proficiency', context), context);
+        var reason = enforceProp(op, 'reason', context);
+        analyzedData.classDC.proficiency = proficiency;
+        analyzedData.classDC.ops.push(op);
     } else if (type == 'speed') {
         var value = enforceProp(op, 'value', context);
         var reason = enforceProp(op, 'reason', context);
@@ -74,6 +79,15 @@ function enforceProp(obj, name, context) {
     throw new BadConfigException(context + ', missing the "' + name + '" attribute')
 }
 
+function enforceProficiency(name, context) {
+    if (name == "untrained") return name;
+    if (name == "trained") return name;
+    if (name == "expert") return name;
+    if (name == "master") return name;
+    if (name == "legendary") return name;
+    throw new BadConfigException(context + ', found invalid proficiency name "' + name + '"');
+}
+
 //function passthrough(dst, src, name, context) {
 //    dst[name] = enforceProp(src, name, context);
 //}
@@ -94,12 +108,14 @@ go: function(jsonData) {
     // TODO: get ancestry, generate ops from it
     var analyzedData = {
         "ignoreme":null
+        ,"level":1
         ,"characterName":enforceProp(jsonData, 'characterName', context)
         ,"playerName":enforceProp(jsonData, 'playerName', context)
         ,"ancestry":enforceProp(jsonData, 'ancestry', context)
         ,"ancestryAndHeritage":enforceProp(jsonData, 'ancestryAndHeritage', context)
         ,"background":enforceProp(jsonData, 'background', context)
         ,"class":enforceProp(jsonData, 'class', context)
+        ,"keyAbility":enforceProp(jsonData, 'keyAbility', context)
         ,"size":enforceProp(jsonData, 'size', context)
         ,"alignment":enforceProp(jsonData, 'alignment', context)
         ,"traits":enforceProp(jsonData, 'traits', context)
@@ -109,6 +125,7 @@ go: function(jsonData) {
             ,"current": 0
             ,"ops": []
         }
+        ,"classDC":{"proficiency":"untrained",ops:[]}
         ,"speed": {"value":0,ops:[]}
         ,"languages": {names:[],ops:[]}
         ,"ancestryFeats":[]
@@ -116,14 +133,13 @@ go: function(jsonData) {
         ,"ops":jsonData.ops
     };
     for (var i = 0; i < abilities.length; i++) {
-        analyzedData[abilities[i]] = {"value":10, ops:[]};
+        analyzedData[abilities[i]] = {"score":10, ops:[]};
     }
     for (var skillName in common.skillDefs) {
         analyzedData[skillName] = {"proficiency":"untrained", ops:[]};
     }
     var ops = enforceProp(jsonData, 'ops', context);
-    var i = 0;
-    for (i = 0; i < ops.length; i++) {
+    for (var i = 0; i < ops.length; i++) {
         analyzeOp(analyzedData, ops[i]);
     }
     return analyzedData;

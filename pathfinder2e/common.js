@@ -21,7 +21,7 @@ return {
     "society": {"key":"intelligence","optional":false},
     "stealth": {"key":"dexterity","optional":false},
     "survival": {"key":"wisdom","optional":false},
-    "thievery": {"key":"thievery","optional":false}
+    "thievery": {"key":"dexterity","optional":false}
 }
 
 };

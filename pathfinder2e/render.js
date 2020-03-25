@@ -1,5 +1,6 @@
 var render = (function() {
 
+
     /*
 function toTitleCase(s) {
     s = str.toLowerCase().split(' ');
@@ -34,35 +35,33 @@ function camelCaseToDisplayName(s) {
     return parts.join(' ');
 }
 
-function modifierString(mod) {
+function getModifierString(mod) {
     if (mod >= 0) return "+" + mod;
     return mod.toString();
 }
 
-function renderModifier(mod) {
-    return '<span class="ModifierSpan Tooltip">' + modifierString(mod) + '</span>';
+function span(class_,content) {
+    return '<span class="' + class_ + '">' + content + '</span>';
 }
-function renderStat(stat, ops) {
-    return '<span class="StatSpan Tooltip">' + stat +
-        '<div class="TooltipText">' +
-            '<pre class="OpsTooltipPre">' + opsToTextBlock(ops) + '</pre>' +
-        '</div>' +
+function renderStatAndOps(extraClasses, stat, ops) {
+    return '<span class="Tooltip ' + extraClasses + '">' + stat +
+        '<div class="TooltipText">' + opsToPre(ops) + '</div>' +
     '</span>';
 }
 
 
-function renderTooltip(content, tooltip) {
-    return '<div class="Tooltip">' + content +
-        '<span class="TooltipText">' + tooltip + '</span></div>';
+function renderTooltip(extraClasses, content, tooltip) {
+    return '<span class="Tooltip ' + extraClasses + '">' + content +
+        '<div class="TooltipText">' + tooltip + '</div></span>';
 }
 function renderOpsTooltip(content, ops) {
-    return renderTooltip(content, '<pre class="OpsTooltipPre">' + opsToTextBlock(ops) + '</pre>')
+    return renderTooltip('', content, opsToPre(ops))
 }
 
 function span(class_, content) { return '<span class="' + class_ + '">' + content + '</span>'; }
 function labelValue(label, value) { return span("Label", label) + span("Value", value); }
 
-function opsToTextBlock(ops) {
+function opsToText(ops) {
     if (ops.length == 0) return "No Operations";
     var text = '';
     var i = 0;
@@ -71,26 +70,18 @@ function opsToTextBlock(ops) {
     }
     return text;
 }
+function opsToPre(ops) {
+    return '<pre class="OpsTooltipPre">' + opsToText(ops) + '</pre>';
+}
 
+// TODO: rename to abilityDefMap
 var abilityMap = {
-    "strength": {
-        "displayName": "STR",
-    },
-    "dexterity": {
-        "displayName": "DEX",
-    },
-    "constitution": {
-        "displayName": "CON",
-    },
-    "intelligence": {
-        "displayName": "INT",
-    },
-    "wisdom": {
-        "displayName": "WIS",
-    },
-    "charisma": {
-        "displayName": "CHA",
-    },
+    "strength": {"displayName": "STR"},
+    "dexterity": {"displayName": "DEX"},
+    "constitution": {"displayName": "CON"},
+    "intelligence": {"displayName": "INT"},
+    "wisdom": {"displayName": "WIS"},
+    "charisma": {"displayName": "CHA"},
 };
 
 
@@ -101,12 +92,116 @@ RenderException.prototype = Object.create(Error.prototype);
 
 function enforceProp(obj, name, context) {
     if (name in obj) return obj[name];
-    throw new analyze.RenderException(context + ' missing the "' + name + '" property')
+    throw new RenderException(context + ' missing the "' + name + '" property')
+}
+
+function getProficiencyModifier(level, prof, context) {
+    if (prof == "untrained") return 0;
+    if (prof == "trained") return 2 + level;
+    if (prof == "expert") return 4 + level;
+    if (prof == "master") return 6 + level;
+    if (prof == "legendary") return 8 + level;
+    throw new RenderException(context + ' found invalid proficiency "' + prof +
+        '" expected untrained, trained, expert, master or legendary');
+}
+
+function abilityScoreToModifier(score) { return Math.floor( (score - 10) / 2); }
+
+function renderAbilityScoresBlock(data) {
+    html = '';
+    html += '<div class="BlockDiv AbilityScoresBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Ability Scores</div>';
+    html +=     '<div class="BlockContentDiv AbilityScoresContentDiv">';
+    for (var name in abilityMap) {
+        var abilityDef = abilityMap[name];
+        var abilityObj = data[name];
+        var modifier = abilityScoreToModifier(abilityObj.score);
+        html += '<div class="BlockRowDiv StatRowDiv">'
+        html +=     span('Span OneLine BoxSpan ModifierSpan Curved', getModifierString(modifier));
+        html +=     span('Span OneLine AbilityLabel', abilityDef.displayName);
+        html +=     renderTooltip('Span OneLine BoxSpan ModifierSpan', abilityObj.score, opsToPre(abilityObj.ops));
+        html += '</div>'
+    }
+    html +=     '</div>';
+    html += '</div>';
+    return html;
+}
+function renderSkillsBlock(data) {
+    html = '';
+    html += '<div class="BlockDiv SkillsBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Skills</div>';
+    html +=     '<div class="BlockContentDiv SkillsContentDiv">';
+    for (var skillName in common.skillDefs) {
+        var skill = data[skillName];
+        var skillDef = common.skillDefs[skillName];
+        if (skill.proficiency == "untrained" && skillDef.optional)
+            continue;
+        var abilityObj = data[skillDef.key];
+        var abilityMod = abilityScoreToModifier(abilityObj.score);
+        var profMod = getProficiencyModifier(data.level, skill.proficiency, 'for the "' + skillName + '" skill');
+        html += '<div class="BlockRowDiv StatRowDiv">';
+        html +=     span('Span OneLine SkillLabel', camelCaseToDisplayName(skillName));
+        html +=     span('Span OneLine BoxSpan ModifierSpan Curved', getModifierString(profMod + abilityMod));
+        html +=     span('Span OneLine',  '&nbsp;=&nbsp;');
+        html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityMap[skillDef.key].displayName + '<br/>' + getModifierString(abilityMod));
+        html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan Proficiency', 'Prof<br/>' + profMod);
+        html +=     renderTooltip('', skill.proficiency, opsToPre(skill.ops));
+        html += '</div>';
+    }
+    html +=     '</div>';
+    html += '</div>';
+    return html;
+}
+function renderClassDCBlock(data) {
+    var abilityName = data.keyAbility;
+    var abilityMod = abilityScoreToModifier(data[abilityName].score);
+    var profMod = getProficiencyModifier(data.level, data.classDC.proficiency, '');
+    var classDC = 10 + abilityMod + profMod;
+    html = '';
+    html += '<div class="BlockDiv ClassDCBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Class DC</div>';
+    html +=     '<div class="BlockContentDiv ClassDCContentDiv">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+
+    html +=             span('Span OneLine BoxSpan ModifierSpan', classDC);
+    html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
+    html +=             span('Span TwoLine Centered', 'BASE<br/>10');
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityMap[abilityName].displayName + '<br/>' + getModifierString(abilityMod));
+    html +=             renderTooltip('', span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + profMod) +
+                            data.classDC.proficiency,
+                            opsToPre(data.classDC.ops));
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    return html;
+}
+
+function renderArmorClass(data) {
+    html = '';
+    html += '<div class="BlockDiv ArmorClassBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Armor Class</div>';
+    html +=     '<div class="BlockContentDiv ArmorClassContentDiv">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    return html;
+}
+function renderSavingThrows(data) {
+    html = '';
+    html += '<div class="BlockDiv SavingThrowsBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Saving Throws</div>';
+    html +=     '<div class="BlockContentDiv SavingThrowsContentDiv">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    return html;
 }
 
 return {
 
-opsToTextBlock: opsToTextBlock,
+    opsToPre: opsToPre,
 
 go: function(data) {
     html = ''
@@ -143,20 +238,13 @@ go: function(data) {
 
 
     html += '<div class="MainStatsDiv">';
-    html +=     '<div class="AbilityScoresBlockDiv BlockDiv">';
-    html +=         '<div class="BlockTitleDiv">Ability Scores</div>';
-    html +=         '<div class="AbilityScoresContentDiv BlockContentDiv">';
-    for (var name in abilityMap) {
-        var info = abilityMap[name];
-        var charObj = data[name];
-        var modifier = Math.floor( (charObj.value - 10) / 2);
-        html += '<div class="BlockRowDiv">'
-        html +=     renderModifier(modifier);
-        html +=     ' <span>' + info.displayName + '</span>';
-        html +=     '<span class="ScoreSpan">' + renderStat(charObj.value, charObj.ops) + '</span>';
-        html += '</div>'
-    }
-    html +=         '</div>';
+    html +=     '<div class="Column1">';
+    html +=         renderAbilityScoresBlock(data);
+    html +=         renderClassDCBlock(data);
+    html +=     '</div>';
+    html +=     '<div class="Column2">';
+    html +=         renderArmorClass(data);
+    html +=         renderSavingThrows(data);
     html +=     '</div>';
     html += '</div>';
 
@@ -186,20 +274,7 @@ go: function(data) {
 
     // TODO: fully implement skills
     html += '<br/><br/>';
-    html += '<div class="SkillsBlockDiv BlockDiv">';
-    html +=     '<div class="BlockTitleDiv">Skills</div>';
-    html +=     '<div class="SkillsContentDiv BlockContentDiv">';
-    for (var skillName in common.skillDefs) {
-        var skill = data[skillName];
-        var skillDef = common.skillDefs[skillName];
-        if (skill.proficiency == "untrained" && skillDef.optional)
-            continue;
-        html += '<div class="TempSkillRow"><span class="SkillLabel">' + camelCaseToDisplayName(skillName) + '</span>';
-        html += renderOpsTooltip(skill.proficiency, skill.ops);
-        html += '</div>';
-    }
-    html +=     '</div>';
-    html += '</div>'; // SkillsDiv
+    html += renderSkillsBlock(data);
 
     // TODO: fully implement reactions info
     html += '<br/><br/>';
