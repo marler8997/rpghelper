@@ -68,12 +68,18 @@ function analyzeOp(analyzedData, op)
         var reason = enforceProp(op, 'reason', context);
         analyzedData.xp.value += add;
         analyzedData.xp.ops.push(op);
-    } else if (type == 'hp') {
+    } else if (type == 'maxHP') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.hp.max += mod;
-        analyzedData.hp.current += mod;
-        analyzedData.hp.ops.push(op);
+        analyzedData.maxHP.value += mod;
+        analyzedData.maxHP.ops.push(op);
+        analyzedData.currentHP.value += mod;
+        analyzedData.currentHP.ops.push(op);
+    } else if (type == 'currentHP') {
+        var mod = enforceProp(op, 'mod', context);
+        var reason = enforceProp(op, 'reason', context);
+        analyzedData.currentHP.value += mod;
+        analyzedData.currentHP.ops.push(op);
     } else if (type == 'classDC') {
         var proficiency = enforceProficiency(enforceProp(op, 'proficiency', context), context);
         var reason = enforceProp(op, 'reason', context);
@@ -136,11 +142,8 @@ go: function(jsonData) {
         ,"traits":enforceProp(jsonData, 'traits', context)
         ,"deity":enforceProp(jsonData, 'deity', context)
         ,"heroPoints":{"value":1,"ops":[]}
-        ,"hp": {
-            "max": 0
-            ,"current": 0
-            ,"ops": []
-        }
+        ,"maxHP":{"value":0,"ops":[]}
+        ,"currentHP":{"value":0,"ops":[]}
         ,"classDC":{"proficiency":"untrained","ops":[]}
         ,"speed": {"value":0,"ops":[]}
         ,"languages": {names:[],"ops":[]}

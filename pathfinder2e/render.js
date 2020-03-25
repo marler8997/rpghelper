@@ -195,6 +195,20 @@ function renderSavingThrows(data) {
     html += '</div>';
     return html;
 }
+function renderHitPoints(data) {
+    html = '';
+    html += '<div class="BlockDiv HitPointsBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">HitPoints</div>';
+    html +=     '<div class="BlockContentDiv HitPointsContentDiv">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=             renderTooltip('Span OneLine BoxSpan BigText CurrentHPSpan', data.currentHP.value, opsToPre(data.currentHP.ops));
+    html +=             span("", '&nbsp;/&nbsp;');
+    html +=             renderTooltip('Span OneLine BoxSpan BigText MaxHPSpan', data.maxHP.value, opsToPre(data.maxHP.ops));
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    return html;
+}
 
 return {
 
@@ -231,9 +245,6 @@ go: function(data) {
     html +=         '<div class="RowDiv FieldDiv heroPointsDiv">' + labelValue("Hero Points", data.heroPoints.value) + '</div>';
     html +=     '</div>';
     html += '</div>';
-    html += '<div class="hpDiv">HP: ' + data.hp.current + " / ";
-    html +=     renderOpsTooltip(data.hp.max, data.hp.ops);
-    html += '</div>';
     html += '<h3>Speed: ' + renderOpsTooltip(data.speed.value,  data.speed.ops) + '</h3>';
 
 
@@ -246,8 +257,13 @@ go: function(data) {
     html +=         renderArmorClass(data);
     html +=         renderSavingThrows(data);
     html +=     '</div>';
+    html +=     '<div class="Column3">';
+    html +=         renderHitPoints(data);
+    html +=     '</div>';
     html += '</div>';
 
+    html += '<br/>';
+    html += renderSkillsBlock(data);
 
     html += '<h5>Languages: ' + renderOpsTooltip(data.languages.names.join(", "), data.languages.ops) + '</h5>';
 
@@ -271,10 +287,6 @@ go: function(data) {
     html +=     '</div>';
     html += '</div>';
     html += '</div>'; // FeatsDiv
-
-    // TODO: fully implement skills
-    html += '<br/><br/>';
-    html += renderSkillsBlock(data);
 
     // TODO: fully implement reactions info
     html += '<br/><br/>';
