@@ -66,6 +66,9 @@ td {
     }
 
     function configFileSelect(evt) {
+        localFileSelected(evt.target.files[0]);
+    }
+    function localFileSelected(filename) {
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {
             switch(evt.target.error.code) {
@@ -87,7 +90,7 @@ td {
         reader.onload = function(e) {
             loadFile(e.target.result);
         }
-        reader.readAsText(evt.target.files[0]);
+        reader.readAsText(filename);
     }
     function getUrlVars() {
         var vars = {};
@@ -100,9 +103,12 @@ td {
         console.log('downloading character from: ' + url);
         let request = new XMLHttpRequest();
         request.open('GET', url);
-        request.responseType = 'text/json';
+        request.responseType = 'json';
         request.onload = function() {
             loadFile(request.response);
+        };
+        request.onerror = function() {
+            setLoadError('Failed to download character file from "' + url + '"');
         };
         request.send();
     }

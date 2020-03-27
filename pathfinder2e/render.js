@@ -36,6 +36,7 @@ function camelCaseToDisplayName(s) {
 }
 
 function getModifierString(mod) {
+    if (!Number.isInteger(mod)) throw new RenderException('the value "' + mod + '" is not a valid modifier');
     if (mod >= 0) return "+" + mod;
     return mod.toString();
 }
@@ -141,7 +142,7 @@ function renderSkillsBlock(data) {
         html +=     span('Span OneLine BoxSpan ModifierSpan Curved', getModifierString(profMod + abilityMod));
         html +=     span('Span OneLine',  '&nbsp;=&nbsp;');
         html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityMap[skillDef.key].displayName + '<br/>' + getModifierString(abilityMod));
-        html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan Proficiency', 'Prof<br/>' + profMod);
+        html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan Proficiency', 'Prof<br/>' + getModifierString(profMod));
         html +=     renderTooltip('', skill.proficiency, opsToPre(skill.ops));
         html += '</div>';
     }
@@ -159,12 +160,11 @@ function renderClassDCBlock(data) {
     html +=     '<div class="BlockTitleDiv">Class DC</div>';
     html +=     '<div class="BlockContentDiv ClassDCContentDiv">';
     html +=         '<div class="BlockRowDiv StatRowDiv">';
-
     html +=             span('Span OneLine BoxSpan ModifierSpan', classDC);
     html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
     html +=             span('Span TwoLine Centered', 'BASE<br/>10');
     html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityMap[abilityName].displayName + '<br/>' + getModifierString(abilityMod));
-    html +=             renderTooltip('', span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + profMod) +
+    html +=             renderTooltip('', span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + getModifierString(profMod)) +
                             data.classDC.proficiency,
                             opsToPre(data.classDC.ops));
     html +=         '</div>';
@@ -174,12 +174,51 @@ function renderClassDCBlock(data) {
 }
 
 function renderArmorClass(data) {
+    var dexMod = abilityScoreToModifier(data.dexterity.score);
+    var dexOrCap = dexMod;
+    var dexAppliedClass = '';
+    var capAppliedClass = ' DisabledBox';
+    var itemBonus = 0;
+    armorDef = common.armorDefs[data.equippedArmor.id];
+    var armorTooltip = '<pre>' + data.equippedArmor.id + ': ' + JSON.stringify(armorDef) + '</pre>';
+
+    var capString = ''; // todo get real cap
+    if (armorDef.dexCap != null) {
+        capString = getModifierString(armorDef.dexCap);
+        if (armorDef.dexCap < dexMod) {
+            dexOrCap = armorDef.dexCap;
+            dexAppliedClass = ' DisabledBox';
+            capAppliedClass = '';
+        }
+    }
+    itemBonus = armorDef.acBonus;
+    var equippedArmorSkill = data.armorSkills[armorDef.type];
+    var profMod = getProficiencyModifier(data.level, equippedArmorSkill.proficiency, '');
+    var ac = 10 + dexOrCap + profMod + itemBonus;
+
     html = '';
     html += '<div class="BlockDiv ArmorClassBlockDiv">';
     html +=     '<div class="BlockTitleDiv">Armor Class</div>';
     html +=     '<div class="BlockContentDiv ArmorClassContentDiv">';
     html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=             span('Span OneLine BoxSpan ModifierSpan Curved', ac);
+    html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
+    html +=             span('Span TwoLine Centered', 'BASE<br/>10');
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan' + dexAppliedClass, span('', 'DEX<br/>' + getModifierString(dexMod)));
+    html +=             span('Span OneLine',  '&nbsp;or&nbsp;');
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan' + capAppliedClass, span('', 'CAP<br/>' + capString));
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', span('', 'Prof<br/>' + getModifierString(profMod)));
+    html +=             renderTooltip('Span OneLine', equippedArmorSkill.proficiency, opsToPre(equippedArmorSkill.ops));
+    html +=             renderTooltip('Span TwoLine BoxSpan TwoLineBoxSpan', span('', 'Item<br/>' + getModifierString(itemBonus)), armorTooltip);
     html +=         '</div>';
+    for (var i = 0; i < common.armorTypes.length; i++) {
+        var armorType = common.armorTypes[i];
+        var armorSkill = data.armorSkills[armorType];
+        html +=         '<div class="ArmorSkillDiv">';
+        html +=         span('Type', armorType + ': ');
+        html +=         renderTooltip('', armorSkill.proficiency, opsToPre(armorSkill.ops));
+        html +=         '</div>';
+    }
     html +=     '</div>';
     html += '</div>';
     return html;

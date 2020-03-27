@@ -88,6 +88,9 @@ row with modifiers/proficiency score/etc, i.e. SkillRow ClassDCRow
 .StatRowDiv .BigText {
     font-size:30px;
 }
+.StatRowDiv .DisabledBox {
+    background:#aaa;color:#555;
+}
 .Curved { border-radius: 6px; }
 .Centered { text-align:center; }
 
@@ -195,6 +198,14 @@ MainStatsDiv
 
 .ClassDCBlockDiv { margin-top:10px; }
 .SavingThrowsBlockDiv { margin-top:10px; }
+
+.ArmorClassContentDiv .ArmorSkillDiv .Type {
+    display:inline-block;
+    width:90px;
+    text-align:right;
+    margin-right:10px;
+}
+
 
 .HitPointsContentDiv { text-align:center }
 .HitPointsBlockDiv .CurrentHPSpan, .HitPointsBlockDiv .MaxHPSpan {

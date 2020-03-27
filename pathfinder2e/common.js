@@ -37,6 +37,15 @@ return {
     "stealth": {"key":"dexterity","optional":false},
     "survival": {"key":"wisdom","optional":false},
     "thievery": {"key":"dexterity","optional":false}
+},
+
+"armorTypes":[
+    "unarmored","light","medium","heavy"
+],
+
+"armorDefs":{
+    "noArmor":{"type":"unarmored","acBonus":0,"dexCap":null,"checkPenalty":0,"speedPenalty":0,"strength":0,"bulk":0,"group":null,"traits":null}
+    ,"scaleMail":{"type":"medium","acBonus":4,"dexCap":2,"checkPenalty":-2,"speedPenalty":-5,"strength":14,"bulk":2,"group":"leather","traits":null}
 }
 
 };

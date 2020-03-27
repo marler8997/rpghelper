@@ -36,7 +36,7 @@ function enforceProficiency(name, context) {
     throw new BadConfigException(context + ', found invalid proficiency name "' + name + '"');
 }
 
-function analyzeOp(analyzedData, op)
+function analyzeOp(d, op)
 {
     type = enforceProp(op, 'type', 'Inside an op');
     context = "Inside op type '" + type + "'";
@@ -46,8 +46,8 @@ function analyzeOp(analyzedData, op)
             var ability = abilities[i];
             var mod = enforceProp(op, 'mod', context);
             var reason = enforceProp(op, 'reason', context);
-            analyzedData[ability].score += mod;
-            analyzedData[ability].ops.push(op);
+            d[ability].score += mod;
+            d[ability].ops.push(op);
             return;
         }
     }
@@ -55,8 +55,8 @@ function analyzeOp(analyzedData, op)
         if (type == skillName) {
             var proficiency = enforceProp(op, 'proficiency', context);
             var reason = enforceProp(op, 'reason', context);
-            analyzedData[skillName].proficiency = proficiency;
-            analyzedData[skillName].ops.push(op);
+            d[skillName].proficiency = proficiency;
+            d[skillName].ops.push(op);
             return;
         }
     }
@@ -66,41 +66,45 @@ function analyzeOp(analyzedData, op)
     } else if (type == 'xp') {
         var add = enforceProp(op, 'add', context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.xp.value += add;
-        analyzedData.xp.ops.push(op);
+        d.xp.value += add;
+        d.xp.ops.push(op);
     } else if (type == 'maxHP') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.maxHP.value += mod;
-        analyzedData.maxHP.ops.push(op);
-        analyzedData.currentHP.value += mod;
-        analyzedData.currentHP.ops.push(op);
+        d.maxHP.value += mod;
+        d.maxHP.ops.push(op);
+        d.currentHP.value += mod;
+        d.currentHP.ops.push(op);
     } else if (type == 'currentHP') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.currentHP.value += mod;
-        analyzedData.currentHP.ops.push(op);
+        d.currentHP.value += mod;
+        d.currentHP.ops.push(op);
     } else if (type == 'classDC') {
         var proficiency = enforceProficiency(enforceProp(op, 'proficiency', context), context);
         var reason = enforceProp(op, 'reason', context);
-        setBiggerProficiency(analyzedData.classDC, proficiency);
-        analyzedData.classDC.ops.push(op);
+        setBiggerProficiency(d.classDC, proficiency);
+        d.classDC.ops.push(op);
     } else if (type == 'speed') {
         var value = enforceProp(op, 'value', context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.speed.value = value;
-        analyzedData.speed.ops.push(op);
+        d.speed.value = value;
+        d.speed.ops.push(op);
     } else if (type == 'language') {
         var name = enforceProp(op, 'name', context);
         var reason = enforceProp(op, 'reason', context);
-        analyzedData.languages.names.push(name);
-        analyzedData.languages.ops.push(op);
+        d.languages.names.push(name);
+        d.languages.ops.push(op);
     } else if (type == 'ancestryFeat') {
         var name = enforceProp(op, 'name', context);
-        analyzedData.ancestryFeats.push(name);
+        d.ancestryFeats.push(name);
     } else if (type == 'reaction') {
         var name = enforceProp(op, 'name', context);
-        analyzedData.reactions.names.push(name);
+        d.reactions.names.push(name);
+    } else if (type == 'equipArmor') {
+        var id = enforceProp(op, 'id', context);
+        enforceProp(common.armorDefs, id, context + ', the armorDefs object');
+        d.equippedArmor.id = id;
     } else {
         throw new BadConfigException('unknown op type "' + type + '"');
     }
@@ -149,6 +153,8 @@ go: function(jsonData) {
         ,"languages": {names:[],"ops":[]}
         ,"ancestryFeats":[]
         ,"reactions": {names:[]}
+        ,"armorSkills":{}
+        ,"equippedArmor":{"id":"noArmor"}
         ,"ops":jsonData.ops
     };
     for (var i = 0; i < abilities.length; i++) {
@@ -156,6 +162,10 @@ go: function(jsonData) {
     }
     for (var skillName in common.skillDefs) {
         analyzedData[skillName] = {"proficiency":"untrained", "ops":[]};
+    }
+    for (var i = 0; i < common.armorTypes.length; i++) {
+        var armorType = common.armorTypes[i];
+        analyzedData.armorSkills[armorType] = {"proficiency":"untrained", "ops":[]};
     }
     var ops = enforceProp(jsonData, 'ops', context);
     for (var i = 0; i < ops.length; i++) {
