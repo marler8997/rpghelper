@@ -101,6 +101,12 @@ function analyzeOp(d, op)
     } else if (type == 'reaction') {
         var name = enforceProp(op, 'name', context);
         d.reactions.names.push(name);
+    } else if (type == 'armorSkill') {
+        var armorType = enforceProp(op, 'armorType', context);
+        var proficiency = enforceProp(op, 'proficiency', context);
+        var reason = enforceProp(op, 'reason', context);
+        setBiggerProficiency(d.armorSkills[armorType], proficiency);
+        d.armorSkills[armorType].ops.push(op);
     } else if (type == 'equipArmor') {
         var id = enforceProp(op, 'id', context);
         enforceProp(common.armorDefs, id, context + ', the armorDefs object');

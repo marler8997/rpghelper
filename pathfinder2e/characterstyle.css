@@ -18,7 +18,8 @@
     border: 1px solid #aaa;
     border-radius: 6px;
     padding: 10px;
-    font-size: 15px;
+    font-size: 12px;
+    line-height:12px;
     position: absolute;
     left:50px; /* offset to move out of the way of the mouse */
     z-index: 1;
