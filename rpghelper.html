@@ -32,6 +32,16 @@ td {
 <script src="pathfinder2e/analyze.js"></script>
 <script src="pathfinder2e/render.js"></script>
 <script>
+    // used to save file objects to be accesse dlater
+    globalFileObjectMap = {};
+    function reloadCharacter(fileObjName) {
+        get('MainCharacterDiv').innerHTML = '';
+        if (!(fileObjName in globalFileObjectMap)) {
+            setLoadError("invalid file object name '" + fileObjName + "'");
+            return;
+        }
+        localFileSelected(globalFileObjectMap[fileObjName]);
+    }
 
     function get(id) { return document.getElementById(id); }
 
@@ -44,7 +54,7 @@ td {
         get('LoadFileStatusPre').innerText = '';
     }
 
-    function loadFile(jsonString) {
+    function onFileLoaded(fileObjName, jsonString) {
         //console.log(jsonString);
         setLoadStatus('parsing config...');
         var data;
@@ -58,17 +68,17 @@ td {
 
         setLoadStatus('rendering...');
         var renderedHtml;
-        try { renderedHtml = render.go(analyzeResult); }
+        try { renderedHtml = render.go(fileObjName, analyzeResult); }
         catch (e) { setLoadError(e.message); throw e; }
-        get('MainCharacterDiv').innerHTML = renderedHtml;
-        get('OpsDiv').innerHTML = render.opsToPre(data.ops);
+        get('MainCharacterDiv').innerHTML = renderedHtml +
+         '<br/><br/><hr>' + render.opsToPre(data.ops);
         setLoadStatus('');
     }
 
     function configFileSelect(evt) {
         localFileSelected(evt.target.files[0]);
     }
-    function localFileSelected(filename) {
+    function localFileSelected(fileobj) {
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {
             switch(evt.target.error.code) {
@@ -88,9 +98,10 @@ td {
             setLoadStatus('loading...');
         };
         reader.onload = function(e) {
-            loadFile(e.target.result);
+            onFileLoaded(fileobj.name, e.target.result);
         }
-        reader.readAsText(filename);
+        globalFileObjectMap[fileobj.name] = fileobj;
+        reader.readAsText(fileobj);
     }
     function getUrlVars() {
         var vars = {};
@@ -126,12 +137,5 @@ td {
 </script>
 <pre id="LoadFileErrorPre" style="color:#a00"></pre>
 <pre id="LoadFileStatusPre"></pre>
-<div>
-    <div id="MainCharacterDiv"></div>
-</div>
-<br/><br/>
-<hr/>
-<div>
-    <div id="OpsDiv"></div>
-</div>
+<div id="MainCharacterDiv"></div>
 </body></html>

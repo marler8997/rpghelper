@@ -2,10 +2,13 @@
 .CharacterDiv {
     background:rgb(209, 197, 180);
     color:rgb(53, 52, 63);
-    padding:15px;
+    padding:5px;
 }
 
-
+.ReloadCharacterDiv button {
+    padding:10px 5px;
+    margin-bottom:5px;
+}
 
 .Tooltip {
     position: relative;
