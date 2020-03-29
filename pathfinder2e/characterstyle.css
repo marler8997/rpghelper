@@ -178,15 +178,15 @@ MainStatsDiv
 .MainStatsDiv {
     display: flex;
 }
-.MainStatsDiv .Column1 {
+.MainStatsDiv > .Column1 {
     width:300px;
     margin-right:10px;
 }
-.MainStatsDiv .Column2 {
+.MainStatsDiv > .Column2 {
     width:400px;
     margin-right:10px;
 }
-.MainStatsDiv .Column3 {
+.MainStatsDiv > .Column3 {
     width:200px;
 }
 
@@ -210,11 +210,20 @@ MainStatsDiv
     margin-right:10px;
 }
 
+.SavingThrowsContentDiv {
+    display:flex;
+    justify-content: space-between;
+}
+.SavingThrowsContentDiv .Column {
+    width:130px;
+}
 
 .HitPointsContentDiv { text-align:center }
 .HitPointsBlockDiv .CurrentHPSpan, .HitPointsBlockDiv .MaxHPSpan {
     width:60px;
 }
+
+.SpeedBlockDiv { width:130px; padding-left:10px;}
 
 /*
 ===============================================================================

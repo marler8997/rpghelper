@@ -17,6 +17,12 @@ return {
     return proficiencyDefs[name];
 },
 
+"saveDefs": {
+    "fortitude":{"ability":"constitution",'displayName':"Fortitude"},
+    "reflex":{"ability":"dexterity","displayName":"Reflex"},
+    "will":{"ability":"wisdom","displayName":"Will"}
+},
+
 "skillDefs": {
     "perception": {"key":"wisdom","optional":false},
     "acrobatics": {"key":"dexterity","optional":false},

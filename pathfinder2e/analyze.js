@@ -111,6 +111,12 @@ function analyzeOp(d, op)
         var id = enforceProp(op, 'id', context);
         enforceProp(common.armorDefs, id, context + ', the armorDefs object');
         d.equippedArmor.id = id;
+    } else if (type == 'saveProficiency') {
+        var id = enforceProp(op, 'id', context);
+        var proficiency = enforceProp(op, 'proficiency', context);
+        var reason = enforceProp(op, 'reason', context);
+        setBiggerProficiency(d[id], proficiency);
+        d[id].ops.push(op);
     } else {
         throw new BadConfigException('unknown op type "' + type + '"');
     }
@@ -165,6 +171,9 @@ go: function(jsonData) {
     };
     for (var i = 0; i < abilities.length; i++) {
         analyzedData[abilities[i]] = {"score":10, "ops":[]};
+    }
+    for (var saveName in common.saveDefs) {
+        analyzedData[saveName] = {"proficiency":"untrained","ops":[]};
     }
     for (var skillName in common.skillDefs) {
         analyzedData[skillName] = {"proficiency":"untrained", "ops":[]};

@@ -204,12 +204,12 @@ function renderArmorClass(data) {
     html +=             span('Span OneLine BoxSpan ModifierSpan Curved', ac);
     html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
     html +=             span('Span TwoLine Centered', 'BASE<br/>10');
-    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan' + dexAppliedClass, span('', 'DEX<br/>' + getModifierString(dexMod)));
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan' + dexAppliedClass, 'DEX<br/>' + getModifierString(dexMod));
     html +=             span('Span OneLine',  '&nbsp;or&nbsp;');
-    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan' + capAppliedClass, span('', 'CAP<br/>' + capString));
-    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', span('', 'Prof<br/>' + getModifierString(profMod)));
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan' + capAppliedClass, 'CAP<br/>' + capString);
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + getModifierString(profMod));
     html +=             renderTooltip('Span OneLine', equippedArmorSkill.proficiency, opsToPre(equippedArmorSkill.ops));
-    html +=             renderTooltip('Span TwoLine BoxSpan TwoLineBoxSpan', span('', 'Item<br/>' + getModifierString(itemBonus)), armorTooltip);
+    html +=             renderTooltip('Span TwoLine BoxSpan TwoLineBoxSpan', 'Item<br/>' + getModifierString(itemBonus), armorTooltip);
     html +=         '</div>';
     for (var i = 0; i < common.armorTypes.length; i++) {
         var armorType = common.armorTypes[i];
@@ -228,8 +228,29 @@ function renderSavingThrows(data) {
     html += '<div class="BlockDiv SavingThrowsBlockDiv">';
     html +=     '<div class="BlockTitleDiv">Saving Throws</div>';
     html +=     '<div class="BlockContentDiv SavingThrowsContentDiv">';
-    html +=         '<div class="BlockRowDiv StatRowDiv">';
-    html +=         '</div>';
+    var i = 0;
+    for (var saveName in common.saveDefs) {
+        i += 1;
+        var saveDef = common.saveDefs[saveName];
+        var saveObj = data[saveName];
+        var abilityDef = abilityMap[saveDef.ability];
+        var abilityMod = abilityScoreToModifier(data[saveDef.ability].score);
+        var profMod = getProficiencyModifier(data.level, saveObj.proficiency, '');
+        var total = abilityMod + profMod;
+        html +=         '<div class="Column Column' + i + '">';
+        html +=             '<div class="Centered">' + saveDef.displayName + '</div>';
+        html +=             '<div class="BlockRowDiv StatRowDiv Centered">';
+        html +=                 span('Span OneLine BoxSpan ModifierSpan Curved', total);
+        html +=             '</div>';
+        html +=             '<div class="BlockRowDiv StatRowDiv Centered">';
+        html +=                 span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityDef.displayName + '<br/>' + getModifierString(abilityMod));
+        html +=                 renderTooltip('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + getModifierString(profMod), opsToPre(saveObj.ops));
+        html +=             '</div>';
+        html +=             '<div class="BlockRowDiv StatRowDiv Centered">';
+        html +=                 span('Span OneLine', saveObj.proficiency);
+        html +=             '</div>';
+        html +=         '</div>';
+    }
     html +=     '</div>';
     html += '</div>';
     return html;
@@ -287,7 +308,6 @@ go: function(fileObjName, data) {
     html +=         '<div class="RowDiv FieldDiv heroPointsDiv">' + labelValue("Hero Points", data.heroPoints.value) + '</div>';
     html +=     '</div>';
     html += '</div>';
-    html += '<h3>Speed: ' + renderOpsTooltip(data.speed.value,  data.speed.ops) + '</h3>';
 
 
     html += '<div class="MainStatsDiv">';
@@ -304,6 +324,15 @@ go: function(fileObjName, data) {
     html +=     '</div>';
     html += '</div>';
 
+    html += '<br/>';
+    html += '<div class="BlockDiv SpeedBlockDiv">';
+    html +=     '<div class="BlockContentDiv">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=             span('Span OneLine', 'Speed: ');
+    html +=             renderTooltip('Span OneLine BoxSpan ModifierSpan Curved', data.speed.value,  opsToPre(data.speed.ops));
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
     html += '<br/>';
     html += renderSkillsBlock(data);
 
