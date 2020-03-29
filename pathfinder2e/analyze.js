@@ -97,7 +97,16 @@ function analyzeOp(d, op)
         d.languages.ops.push(op);
     } else if (directive == 'ancestryFeat') {
         var name = enforceProp(op, 'name', context);
+        //var reason = enforceProp(op, 'reason', context);
         d.ancestryFeats.push(name);
+    } else if (directive == 'classFeat') {
+        var name = enforceProp(op, 'name', context);
+        var reason = enforceProp(op, 'reason', context);
+        d.classFeats.push(name);
+    } else if (directive == 'skillFeat') {
+        var name = enforceProp(op, 'name', context);
+        var reason = enforceProp(op, 'reason', context);
+        d.skillFeats.push(name);
     } else if (directive == 'reaction') {
         var name = enforceProp(op, 'name', context);
         d.reactions.names.push(name);
@@ -164,6 +173,8 @@ go: function(jsonData) {
         ,"speed": {"value":0,"ops":[]}
         ,"languages": {names:[],"ops":[]}
         ,"ancestryFeats":[]
+        ,"classFeats":[]
+        ,"skillFeats":[]
         ,"reactions": {names:[]}
         ,"armorSkills":{}
         ,"equippedArmor":{"id":"noArmor"}

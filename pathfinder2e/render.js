@@ -270,6 +270,20 @@ function renderHitPoints(data) {
     return html;
 }
 
+function renderFeatsList(className, title, featList) {
+    html = '';
+    html +=     '<div class="BlockDiv ' + className + 'BlockDiv">';
+    html +=         '<div class="BlockTitleDiv">' + title + '</div>';
+    html +=         '<div class="BlockContentDiv ' + className + 'ContentDiv ">';
+    for (var i = 0; i < featList.length; i++) {
+        var feat = featList[i];
+        html +=         '<div class="FieldDiv">' + feat + '</div>';
+    }
+    html +=         '</div>';
+    html +=     '</div>';
+    return html;
+}
+
 return {
 
     opsToPre: opsToPre,
@@ -340,24 +354,13 @@ go: function(data) {
     html += '</div>';
 
     html += '<div class="FeatsDiv">';
-    html += '<div class="FeatsLeftDiv">';
-    html +=     '<div class="AncestryFeatsAndAbilitiesBlockDiv BlockDiv">';
-    html +=         '<div class="BlockTitleDiv">Ancestry Feats And Abilities</div>';
-    html +=         '<div class="AncestryFeatsAndAbilitiesContentDiv BlockContentDiv">';
-    for (var i = 0; i < data.ancestryFeats.length; i++) {
-        var feat = data.ancestryFeats[i];
-        html +=         '<div class="FieldDiv">' + feat + '</div>';
-    }
-    html +=         '</div>';
+    html +=     '<div class="FeatsLeftDiv">';
+    html +=         renderFeatsList('AncestryFeatsAndAbilities', 'Ancestry Feats And Abilities', data.ancestryFeats);
+    html +=         renderFeatsList('SkillFeats', 'Skill Feats', data.skillFeats);
     html +=     '</div>';
-    html += '</div>';
-    html += '<div class="FeatsRightDiv">';
-    html +=     '<div class="ClassFeatsAndAbilitiesBlockDiv BlockDiv">';
-    html +=         '<div class="BlockTitleDiv">Class Feats And Abilities</div>';
-    html +=         '<div class="ClassFeatsAndAbilitiesContentDiv BlockContentDiv">';
-    html +=         '</div>';
+    html +=     '<div class="FeatsRightDiv">';
+    html +=         renderFeatsList('ClassFeatsAndAbilities', 'Class Feats And Abilities', data.classFeats);
     html +=     '</div>';
-    html += '</div>';
     html += '</div>'; // FeatsDiv
 
     // TODO: fully implement reactions info
