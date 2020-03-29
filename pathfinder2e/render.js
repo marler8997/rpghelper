@@ -112,7 +112,7 @@ function renderAbilityScoresBlock(data) {
     html +=     '<div class="BlockContentDiv AbilityScoresContentDiv">';
     for (var name in abilityMap) {
         var abilityDef = abilityMap[name];
-        var abilityObj = data[name];
+        var abilityObj = data.abilities[name];
         var modifier = abilityScoreToModifier(abilityObj.score);
         html += '<div class="BlockRowDiv StatRowDiv">'
         html +=     span('Span OneLine BoxSpan ModifierSpan Curved', getModifierString(modifier));
@@ -130,11 +130,11 @@ function renderSkillsBlock(data) {
     html +=     '<div class="BlockTitleDiv">Skills</div>';
     html +=     '<div class="BlockContentDiv SkillsContentDiv">';
     for (var skillName in common.skillDefs) {
-        var skill = data[skillName];
+        var skill = data.skills[skillName];
         var skillDef = common.skillDefs[skillName];
         if (skill.proficiency == "untrained" && skillDef.optional)
             continue;
-        var abilityObj = data[skillDef.key];
+        var abilityObj = data.abilities[skillDef.key];
         var abilityMod = abilityScoreToModifier(abilityObj.score);
         var profMod = getProficiencyModifier(data.level, skill.proficiency, 'for the "' + skillName + '" skill');
         html += '<div class="BlockRowDiv StatRowDiv">';
@@ -152,7 +152,7 @@ function renderSkillsBlock(data) {
 }
 function renderClassDCBlock(data) {
     var abilityName = data.keyAbility;
-    var abilityMod = abilityScoreToModifier(data[abilityName].score);
+    var abilityMod = abilityScoreToModifier(data.abilities[abilityName].score);
     var profMod = getProficiencyModifier(data.level, data.classDC.proficiency, '');
     var classDC = 10 + abilityMod + profMod;
     html = '';
@@ -174,7 +174,7 @@ function renderClassDCBlock(data) {
 }
 
 function renderArmorClass(data) {
-    var dexMod = abilityScoreToModifier(data.dexterity.score);
+    var dexMod = abilityScoreToModifier(data.abilities.dexterity.score);
     var dexOrCap = dexMod;
     var dexAppliedClass = '';
     var capAppliedClass = ' DisabledBox';
@@ -234,7 +234,7 @@ function renderSavingThrows(data) {
         var saveDef = common.saveDefs[saveName];
         var saveObj = data[saveName];
         var abilityDef = abilityMap[saveDef.ability];
-        var abilityMod = abilityScoreToModifier(data[saveDef.ability].score);
+        var abilityMod = abilityScoreToModifier(data.abilities[saveDef.ability].score);
         var profMod = getProficiencyModifier(data.level, saveObj.proficiency, '');
         var total = abilityMod + profMod;
         html +=         '<div class="Column Column' + i + '">';

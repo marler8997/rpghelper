@@ -108,10 +108,8 @@ return {
         parsed = parseLine(lineNum, line);
         if (parsed == null) continue;
         //console.log(JSON.stringify(parsed));
-        if (parsed.positionalArgs.length != 0)
-            throw new ParseError('line ' + lineNum + ', for now, op configs dont support position args, but got ' + parsed.positionalArgs.length + ': ' + line);
         //var op = parsed;
-        var op = Object.assign({"directive":parsed.directive,"line":parsed.line}, parsed.namedArgs);
+        var op = Object.assign({"directive":parsed.directive,"line":parsed.line,"positionalArgs":parsed.positionalArgs}, parsed.namedArgs);
         //console.log(JSON.stringify(op));
         data.ops.push(op);
     }
