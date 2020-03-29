@@ -38,11 +38,11 @@ function enforceProficiency(name, context) {
 
 function analyzeOp(d, op)
 {
-    type = enforceProp(op, 'type', 'Inside an op');
-    context = "Inside op type '" + type + "'";
+    directive = enforceProp(op, 'directive', 'Inside an op');
+    context = "Inside directive '" + directive + "'";
 
     for (var i = 0; i < abilities.length; i++) {
-        if (type == abilities[i]) {
+        if (directive == abilities[i]) {
             var ability = abilities[i];
             var mod = enforceProp(op, 'mod', context);
             var reason = enforceProp(op, 'reason', context);
@@ -52,7 +52,7 @@ function analyzeOp(d, op)
         }
     }
     for (var skillName in common.skillDefs) {
-        if (type == skillName) {
+        if (directive == skillName) {
             var proficiency = enforceProp(op, 'proficiency', context);
             var reason = enforceProp(op, 'reason', context);
             d[skillName].proficiency = proficiency;
@@ -61,64 +61,64 @@ function analyzeOp(d, op)
         }
     }
     if (false) {
-    } else if (type == 'comment') {
+    } else if (directive == 'comment') {
         // ignore
-    } else if (type == 'xp') {
+    } else if (directive == 'xp') {
         var add = enforceProp(op, 'add', context);
         var reason = enforceProp(op, 'reason', context);
         d.xp.value += add;
         d.xp.ops.push(op);
-    } else if (type == 'maxHP') {
+    } else if (directive == 'maxHP') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
         d.maxHP.value += mod;
         d.maxHP.ops.push(op);
         d.currentHP.value += mod;
         d.currentHP.ops.push(op);
-    } else if (type == 'currentHP') {
+    } else if (directive == 'currentHP') {
         var mod = enforceProp(op, 'mod', context);
         var reason = enforceProp(op, 'reason', context);
         d.currentHP.value += mod;
         d.currentHP.ops.push(op);
-    } else if (type == 'classDC') {
+    } else if (directive == 'classDC') {
         var proficiency = enforceProficiency(enforceProp(op, 'proficiency', context), context);
         var reason = enforceProp(op, 'reason', context);
         setBiggerProficiency(d.classDC, proficiency);
         d.classDC.ops.push(op);
-    } else if (type == 'speed') {
+    } else if (directive == 'speed') {
         var value = enforceProp(op, 'value', context);
         var reason = enforceProp(op, 'reason', context);
         d.speed.value = value;
         d.speed.ops.push(op);
-    } else if (type == 'language') {
+    } else if (directive == 'language') {
         var name = enforceProp(op, 'name', context);
         var reason = enforceProp(op, 'reason', context);
         d.languages.names.push(name);
         d.languages.ops.push(op);
-    } else if (type == 'ancestryFeat') {
+    } else if (directive == 'ancestryFeat') {
         var name = enforceProp(op, 'name', context);
         d.ancestryFeats.push(name);
-    } else if (type == 'reaction') {
+    } else if (directive == 'reaction') {
         var name = enforceProp(op, 'name', context);
         d.reactions.names.push(name);
-    } else if (type == 'armorSkill') {
+    } else if (directive == 'armorSkill') {
         var armorType = enforceProp(op, 'armorType', context);
         var proficiency = enforceProp(op, 'proficiency', context);
         var reason = enforceProp(op, 'reason', context);
         setBiggerProficiency(d.armorSkills[armorType], proficiency);
         d.armorSkills[armorType].ops.push(op);
-    } else if (type == 'equipArmor') {
+    } else if (directive == 'equipArmor') {
         var id = enforceProp(op, 'id', context);
         enforceProp(common.armorDefs, id, context + ', the armorDefs object');
         d.equippedArmor.id = id;
-    } else if (type == 'saveProficiency') {
+    } else if (directive == 'saveProficiency') {
         var id = enforceProp(op, 'id', context);
         var proficiency = enforceProp(op, 'proficiency', context);
         var reason = enforceProp(op, 'reason', context);
         setBiggerProficiency(d[id], proficiency);
         d[id].ops.push(op);
     } else {
-        throw new BadConfigException('unknown op type "' + type + '"');
+        throw new BadConfigException('unknown op directive "' + directive + '"');
     }
 }
 
@@ -135,7 +135,7 @@ BadConfigException: BadConfigException,
 go: function(jsonData) {
     var context = 'At the top-level';
     var system = enforceProp(jsonData, 'system', context);
-    if (system == 'Pathfinder2e') {
+    if (system == 'pathfinder2e') {
         // good
     } else {
         throw new BadConfigException('unknown System "' + system + '"');

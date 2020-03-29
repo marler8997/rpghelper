@@ -28,6 +28,7 @@ td {
 
 </style>
 <link rel="stylesheet" href="pathfinder2e/characterstyle.css">
+<script src="parser.js"></script>
 <script src="pathfinder2e/common.js"></script>
 <script src="pathfinder2e/analyze.js"></script>
 <script src="pathfinder2e/render.js"></script>
@@ -54,12 +55,14 @@ td {
         get('LoadFileStatusPre').innerText = '';
     }
 
-    function onFileLoaded(fileObjName, jsonString) {
+    function onFileLoaded(fileObjName, text) {
         //console.log(jsonString);
         setLoadStatus('parsing config...');
         var data;
-        try { data = JSON.parse(jsonString); }
+        try { data = parser.go(text); }
         catch (e) { setLoadError(e.message); throw e; }
+        //try { data = JSON.parse(jsonString); }
+        //catch (e) { setLoadError(e.message); throw e; }
 
         setLoadStatus('analyzing config...');
         var analyzeResult;
@@ -79,6 +82,7 @@ td {
         localFileSelected(evt.target.files[0]);
     }
     function localFileSelected(fileobj) {
+        get('MainCharacterDiv').innerHTML = '';
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {
             switch(evt.target.error.code) {
@@ -114,7 +118,7 @@ td {
         console.log('downloading character from: ' + url);
         let request = new XMLHttpRequest();
         request.open('GET', url);
-        request.responseType = 'json';
+        request.responseType = 'text';
         request.onload = function() {
             loadFile(request.response);
         };

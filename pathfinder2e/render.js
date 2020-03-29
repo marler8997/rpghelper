@@ -67,7 +67,7 @@ function opsToText(ops) {
     var text = '';
     var i = 0;
     for (i = 0; i < ops.length; i++) {
-        text += JSON.stringify(ops[i]) + '\n';
+        text += ops[i].line + '\n';
     }
     return text;
 }
