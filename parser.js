@@ -12,6 +12,8 @@ function convertUnquotedValue(value) {
 
 function parseLine(lineNum, line) {
     if (line.length == 0) return null;
+    if (line.match(/^ /))
+        throw new ParseError('line ' + lineNum + ', starts with one or more spaces: ' + line);
     if (line.charAt(0) == '#') return null;
     var result = {
         "line":line,
