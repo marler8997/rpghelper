@@ -332,7 +332,12 @@ go: function(data) {
     html += '<br/>';
     html += renderSkillsBlock(data);
 
-    html += '<h5>Languages: ' + renderOpsTooltip(data.languages.names.join(", "), data.languages.ops) + '</h5>';
+    html += '<div class="BlockDiv LanguagesBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Languages</div>';
+    html +=     '<div class="BlockContentDiv LanguagesContentDiv ">';
+    html +=         renderTooltip('', data.languages.names.join(", "), opsToPre(data.languages.ops));
+    html +=     '</div>';
+    html += '</div>';
 
     html += '<div class="FeatsDiv">';
     html += '<div class="FeatsLeftDiv">';
@@ -357,9 +362,9 @@ go: function(data) {
 
     // TODO: fully implement reactions info
     html += '<br/><br/>';
-    html += '<div class="ReactionsBlockDiv BlockDiv">';
+    html += '<div class="BlockDiv ReactionsBlockDiv">';
     html +=     '<div class="BlockTitleDiv">Reactions</div>';
-    html +=     '<div class="ReactionsContentDiv BlockContentDiv">';
+    html +=     '<div class="BlockContentDiv ReactionsContentDiv">';
     for (var i = 0; i < data.reactions.names.length; i++) {
         var name = data.reactions.names[i];
         html +=         '<div>' + name + '</div>';

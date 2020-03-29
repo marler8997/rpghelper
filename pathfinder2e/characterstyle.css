@@ -266,5 +266,7 @@ SkillsDiv
     margin-right:10px;
 }
 
-
-.hpDiv { }
+.LanguagesBlockDiv {
+    width:300px;
+    margin:10px 0;
+}
