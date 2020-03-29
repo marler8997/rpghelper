@@ -51,12 +51,15 @@ function renderStatAndOps(extraClasses, stat, ops) {
 }
 
 
-function renderTooltip(extraClasses, content, tooltip) {
-    return '<span class="Tooltip ' + extraClasses + '">' + content +
-        '<div class="TooltipText">' + tooltip + '</div></span>';
+function renderTooltipCommon(type, extraClasses, content, tooltip) {
+    return '<' + type + ' class="Tooltip ' + extraClasses + '">' + content +
+        '<div class="TooltipText">' + tooltip + '</div></' + type + '>';
 }
-function renderOpsTooltip(content, ops) {
-    return renderTooltip('', content, opsToPre(ops))
+function renderTooltip(extraClasses, content, tooltip) {
+    return renderTooltipCommon('span', 'SpanTooltip ' + extraClasses, content, tooltip);
+}
+function renderDivTooltip(extraClasses, content, tooltip) {
+    return renderTooltipCommon('div', extraClasses, content, tooltip);
 }
 
 function span(class_, content) { return '<span class="' + class_ + '">' + content + '</span>'; }
@@ -277,7 +280,7 @@ function renderFeatsList(className, title, featList) {
     html +=         '<div class="BlockContentDiv ' + className + 'ContentDiv ">';
     for (var i = 0; i < featList.length; i++) {
         var feat = featList[i];
-        html +=         '<div class="FieldDiv">' + feat + '</div>';
+        html += renderDivTooltip('FieldDiv', feat.name, opsToPre([feat.op]));
     }
     html +=         '</div>';
     html +=     '</div>';
@@ -355,11 +358,11 @@ go: function(data) {
 
     html += '<div class="FeatsDiv">';
     html +=     '<div class="FeatsLeftDiv">';
-    html +=         renderFeatsList('AncestryFeatsAndAbilities', 'Ancestry Feats And Abilities', data.ancestryFeats);
-    html +=         renderFeatsList('SkillFeats', 'Skill Feats', data.skillFeats);
+    html +=         renderFeatsList('AncestryFeatsAndAbilities', 'Ancestry Feats And Abilities', data.feats.ancestry);
+    html +=         renderFeatsList('SkillFeats', 'Skill Feats', data.feats.skill);
     html +=     '</div>';
     html +=     '<div class="FeatsRightDiv">';
-    html +=         renderFeatsList('ClassFeatsAndAbilities', 'Class Feats And Abilities', data.classFeats);
+    html +=         renderFeatsList('ClassFeatsAndAbilities', 'Class Feats And Abilities', data.feats.class);
     html +=     '</div>';
     html += '</div>'; // FeatsDiv
 

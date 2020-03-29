@@ -98,21 +98,12 @@ function analyzeOp(d, op)
         var reason = enforceProp(op, 'reason', context);
         d.languages.names.push(name);
         d.languages.ops.push(op);
-    } else if (directive == 'ancestryFeat') {
-        enforcePositionalArgsCount(op, 1, context);
-        var name = op.positionalArgs[0];
-        //var reason = enforceProp(op, 'reason', context);
-        d.ancestryFeats.push(name);
-    } else if (directive == 'classFeat') {
-        enforcePositionalArgsCount(op, 1, context);
-        var name = op.positionalArgs[0];
+    } else if (directive == 'feat') {
+        enforcePositionalArgsCount(op, 2, context);
+        var type = op.positionalArgs[0];
+        var name = op.positionalArgs[1];
         var reason = enforceProp(op, 'reason', context);
-        d.classFeats.push(name);
-    } else if (directive == 'skillFeat') {
-        enforcePositionalArgsCount(op, 1, context);
-        var name = op.positionalArgs[0];
-        var reason = enforceProp(op, 'reason', context);
-        d.skillFeats.push(name);
+        d.feats[type].push({'name':name,'op':op});
     } else if (directive == 'reaction') {
         enforcePositionalArgsCount(op, 0, context);
         var name = enforceProp(op, 'name', context);
@@ -141,10 +132,6 @@ function analyzeOp(d, op)
     }
 }
 
-
-//function passthrough(dst, src, name, context) {
-//    dst[name] = enforceProp(src, name, context);
-//}
 
 return {
 
@@ -182,9 +169,7 @@ go: function(jsonData) {
         ,"classDC":{"proficiency":"untrained","ops":[]}
         ,"speed": {"value":0,"ops":[]}
         ,"languages": {names:[],"ops":[]}
-        ,"ancestryFeats":[]
-        ,"classFeats":[]
-        ,"skillFeats":[]
+        ,"feats":{"ancestry":[],"class":[],"skill":[]}
         ,"skills":[]
         ,"reactions": {names:[]}
         ,"armorSkills":{}
