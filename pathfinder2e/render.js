@@ -274,13 +274,9 @@ return {
 
     opsToPre: opsToPre,
 
-go: function(fileObjName, data) {
+go: function(data) {
     html = ''
     html += '<div class="CharacterDiv">';
-
-    html += '<div class="ReloadCharacterDiv">';
-    html += '    <button onclick="reloadCharacter(\'' + fileObjName + '\')">Reload Character</button>';
-    html += '</div>';
 
     html += '<div class="CharacterIdentityDiv">';
     html +=     '<div class="ImageDiv">';

@@ -10,13 +10,13 @@ body {
     background:#222;
     color:#ddd;
 }
-table {
-    border-collapse: collapse;
-}
-td {
-    border: 1px solid #aaa;
-    padding:5px 10px;
 
+#ReloadCharacterDiv {
+    display: none;
+}
+#ReloadCharacterDiv button {
+    padding:10px 5px;
+    margin-bottom:5px;
 }
 
 #MainCharacterDiv {
@@ -34,14 +34,13 @@ td {
 <script src="pathfinder2e/render.js"></script>
 <script>
     // used to save file objects to be accesse dlater
-    globalFileObjectMap = {};
-    function reloadCharacter(fileObjName) {
-        get('MainCharacterDiv').innerHTML = '';
-        if (!(fileObjName in globalFileObjectMap)) {
-            setLoadError("invalid file object name '" + fileObjName + "'");
-            return;
+    var globalLastCharacterFileObject = null;
+    function reloadCharacter() {
+        if (globalLastCharacterFileObject == null) {
+            setLoadError("no characer has been selected to reload");
+        } else {
+            localFileSelected(globalLastCharacterFileObject);
         }
-        localFileSelected(globalFileObjectMap[fileObjName]);
     }
 
     function get(id) { return document.getElementById(id); }
@@ -51,6 +50,7 @@ td {
         get('LoadFileStatusPre').innerText = msg;
     }
     function setLoadError(msg) {
+        get('MainCharacterDiv').innerHTML = '';
         get('LoadFileErrorPre').innerText = 'ERROR: ' + msg;
         get('LoadFileStatusPre').innerText = '';
     }
@@ -71,9 +71,10 @@ td {
 
         setLoadStatus('rendering...');
         var renderedHtml;
-        try { renderedHtml = render.go(fileObjName, analyzeResult); }
+        try { renderedHtml = render.go(analyzeResult); }
         catch (e) { setLoadError(e.message); throw e; }
-        get('MainCharacterDiv').innerHTML = renderedHtml +
+        get('MainCharacterDiv').innerHTML =
+        renderedHtml +
          '<br/><br/><hr>' + render.opsToPre(data.ops);
         setLoadStatus('');
     }
@@ -82,6 +83,8 @@ td {
         localFileSelected(evt.target.files[0]);
     }
     function localFileSelected(fileobj) {
+        globalLastCharacterFileObject = fileobj;
+        get('ReloadCharacterDiv').style.display = 'block';
         get('MainCharacterDiv').innerHTML = '';
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {
@@ -104,7 +107,6 @@ td {
         reader.onload = function(e) {
             onFileLoaded(fileobj.name, e.target.result);
         }
-        globalFileObjectMap[fileobj.name] = fileobj;
         reader.readAsText(fileobj);
     }
     function getUrlVars() {
@@ -139,6 +141,10 @@ td {
 <script>
     document.getElementById('ConfigFileInput').addEventListener('change', configFileSelect, false);
 </script>
+<br/><br/>
+<div id="ReloadCharacterDiv">
+    <button onclick="reloadCharacter()">Reload Character</button>
+</div>
 <pre id="LoadFileErrorPre" style="color:#a00"></pre>
 <pre id="LoadFileStatusPre"></pre>
 <div id="MainCharacterDiv"></div>
