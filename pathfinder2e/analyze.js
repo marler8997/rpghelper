@@ -120,7 +120,7 @@ function analyzeOp(d, op)
         var id = op.positionalArgs[0];
         enforceProp(common.armorDefs, id, context + ', the armorDefs object');
         d.equippedArmor.id = id;
-    } else if (directive == 'saveProficiency') {
+    } else if (directive == 'save') {
         enforcePositionalArgsCount(op, 1, context);
         var id = op.positionalArgs[0];
         var proficiency = enforceProp(op, 'proficiency', context);
