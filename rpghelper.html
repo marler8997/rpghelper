@@ -100,7 +100,7 @@ body {
         localFileSelected(evt.target.files[0]);
     }
     function localFileSelected(fileobj) {
-        setupReload('fileObj', fileobj);
+        setupReload('fileObject', fileobj);
         get('MainCharacterDiv').innerHTML = '';
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {

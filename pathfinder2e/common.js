@@ -44,6 +44,7 @@ return {
     "dwarvenLore": {"key":"intelligence","optional":true},
     "theatreLore": {"key":"intelligence","optional":true},
     "scribingLore": {"key":"intelligence","optional":true},
+    "absalomLore": {"key":"intelligence","optional":true},
     "medicine": {"key":"wisdom","optional":false},
     "nature": {"key":"wisdom","optional":false},
     "occultism": {"key":"intelligence","optional":false},
