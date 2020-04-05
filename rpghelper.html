@@ -34,12 +34,29 @@ body {
 <script src="pathfinder2e/render.js"></script>
 <script>
     // used to save file objects to be accesse dlater
-    var globalLastCharacterFileObject = null;
-    function reloadCharacter() {
-        if (globalLastCharacterFileObject == null) {
-            setLoadError("no characer has been selected to reload");
+    var globalLastCharacter = {
+        "fileObject": null,
+        "url":null,
+    };
+    function setupReload(kind, value) {
+        if (kind == 'fileObject') {
+            globalLastCharacter.fileObject = value;
+            globalLastCharacter.url = null;
+        } else if (kind == 'url') {
+            globalLastCharacter.fileObject = null;
+            globalLastCharacter.url = value;
         } else {
-            localFileSelected(globalLastCharacterFileObject);
+            alert('codebug');
+        }
+        get('ReloadCharacterDiv').style.display = 'block';
+    }
+    function reloadCharacter() {
+        if (globalLastCharacter.fileObject != null) {
+            localFileSelected(globalLastCharacter.fileObject);
+        } else if (globalLastCharacter.url) {
+            downloadCharacter(globalLastCharacter.url);
+        } else {
+            setLoadError("no characer has been selected to reload");
         }
     }
 
@@ -55,7 +72,7 @@ body {
         get('LoadFileStatusPre').innerText = '';
     }
 
-    function onFileLoaded(fileObjName, text) {
+    function onFileLoaded(text) {
         //console.log(jsonString);
         setLoadStatus('parsing config...');
         var data;
@@ -83,8 +100,7 @@ body {
         localFileSelected(evt.target.files[0]);
     }
     function localFileSelected(fileobj) {
-        globalLastCharacterFileObject = fileobj;
-        get('ReloadCharacterDiv').style.display = 'block';
+        setupReload('fileObj', fileobj);
         get('MainCharacterDiv').innerHTML = '';
         var reader = new FileReader();
         reader.onerror = function errorHandler(evt) {
@@ -105,7 +121,7 @@ body {
             setLoadStatus('loading...');
         };
         reader.onload = function(e) {
-            onFileLoaded(fileobj.name, e.target.result);
+            onFileLoaded(e.target.result);
         }
         reader.readAsText(fileobj);
     }
@@ -122,7 +138,7 @@ body {
         request.open('GET', url);
         request.responseType = 'text';
         request.onload = function() {
-            loadFile(request.response);
+            onFileLoaded(request.response);
         };
         request.onerror = function() {
             setLoadError('Failed to download character file from "' + url + '"');
@@ -132,6 +148,7 @@ body {
     function bodyOnload() {
         var urlVars = getUrlVars();
         if ('file' in urlVars) {
+            setupReload('url', urlVars.file);
             downloadCharacter(urlVars.file);
         }
     }
