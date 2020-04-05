@@ -78,17 +78,6 @@ function opsToPre(ops) {
     return '<pre class="OpsTooltipPre">' + opsToText(ops) + '</pre>';
 }
 
-// TODO: rename to abilityDefMap
-var abilityMap = {
-    "strength": {"displayName": "STR"},
-    "dexterity": {"displayName": "DEX"},
-    "constitution": {"displayName": "CON"},
-    "intelligence": {"displayName": "INT"},
-    "wisdom": {"displayName": "WIS"},
-    "charisma": {"displayName": "CHA"},
-};
-
-
 var RenderException = function (message) {
     return new Error(message);
 }
@@ -113,8 +102,8 @@ function renderAbilityScoresBlock(data) {
     html += '<div class="BlockDiv AbilityScoresBlockDiv">';
     html +=     '<div class="BlockTitleDiv">Ability Scores</div>';
     html +=     '<div class="BlockContentDiv AbilityScoresContentDiv">';
-    for (var name in abilityMap) {
-        var abilityDef = abilityMap[name];
+    for (var name in common.abilityDefs) {
+        var abilityDef = common.abilityDefs[name];
         var abilityObj = data.abilities[name];
         var modifier = abilityScoreToModifier(abilityObj.score);
         html += '<div class="BlockRowDiv StatRowDiv">'
@@ -144,7 +133,7 @@ function renderSkillsBlock(data) {
         html +=     span('Span OneLine SkillLabel', camelCaseToDisplayName(skillName));
         html +=     span('Span OneLine BoxSpan ModifierSpan Curved', getModifierString(profMod + abilityMod));
         html +=     span('Span OneLine',  '&nbsp;=&nbsp;');
-        html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityMap[skillDef.key].displayName + '<br/>' + getModifierString(abilityMod));
+        html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan', common.abilityDefs[skillDef.key].displayName + '<br/>' + getModifierString(abilityMod));
         html +=     span('Span TwoLine BoxSpan TwoLineBoxSpan Proficiency', 'Prof<br/>' + getModifierString(profMod));
         html +=     renderTooltip('', skill.proficiency, opsToPre(skill.ops));
         html += '</div>';
@@ -166,7 +155,7 @@ function renderClassDCBlock(data) {
     html +=             span('Span OneLine BoxSpan ModifierSpan', classDC);
     html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
     html +=             span('Span TwoLine Centered', 'BASE<br/>10');
-    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', abilityMap[abilityName].displayName + '<br/>' + getModifierString(abilityMod));
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', common.abilityDefs[abilityName].displayName + '<br/>' + getModifierString(abilityMod));
     html +=             renderTooltip('', span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + getModifierString(profMod)) +
                             data.classDC.proficiency,
                             opsToPre(data.classDC.ops));
@@ -175,7 +164,6 @@ function renderClassDCBlock(data) {
     html += '</div>';
     return html;
 }
-
 function renderArmorClass(data) {
     var dexMod = abilityScoreToModifier(data.abilities.dexterity.score);
     var dexOrCap = dexMod;
@@ -236,7 +224,7 @@ function renderSavingThrows(data) {
         i += 1;
         var saveDef = common.saveDefs[saveName];
         var saveObj = data[saveName];
-        var abilityDef = abilityMap[saveDef.ability];
+        var abilityDef = common.abilityDefs[saveDef.ability];
         var abilityMod = abilityScoreToModifier(data.abilities[saveDef.ability].score);
         var profMod = getProficiencyModifier(data.level, saveObj.proficiency, '');
         var total = abilityMod + profMod;
@@ -272,7 +260,6 @@ function renderHitPoints(data) {
     html += '</div>';
     return html;
 }
-
 function renderFeatsList(className, title, featList) {
     html = '';
     html +=     '<div class="BlockDiv ' + className + 'BlockDiv">';
@@ -284,6 +271,51 @@ function renderFeatsList(className, title, featList) {
     }
     html +=         '</div>';
     html +=     '</div>';
+    return html;
+}
+function renderSpellAttackRollBlock(data) {
+    var keyAbilityObj = data.abilities[data.keyAbility];
+    var keyAbilityDef = common.abilityDefs[data.keyAbility];
+    var profMod = getProficiencyModifier(data.level, data.spellAttack.proficiency, '');
+    var keyAbilityMod = abilityScoreToModifier(keyAbilityObj.score);
+    var total = keyAbilityMod + profMod;
+    html = '';
+    html += '<div class="BlockDiv SpellAttackRollBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Spell Attack Roll</div>';
+    html +=     '<div class="BlockContentDiv SpellAttackRollContentDiv ">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=             span('Span OneLine BoxSpan ModifierSpan Curved', total);
+    html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', keyAbilityDef.displayName + '<br/>' + getModifierString(keyAbilityMod));
+    html +=             renderTooltip('', span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + getModifierString(profMod))
+                                          + data.spellAttack.proficiency,
+                                      opsToPre(data.spellAttack.ops));
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
+    return html;
+}
+function renderSpellDCBlock(data) {
+    var keyAbilityObj = data.abilities[data.keyAbility];
+    var keyAbilityDef = common.abilityDefs[data.keyAbility];
+    var profMod = getProficiencyModifier(data.level, data.spellDC.proficiency, '');
+    var keyAbilityMod = abilityScoreToModifier(keyAbilityObj.score);
+    var total = 10 + keyAbilityMod + profMod;
+    html = '';
+    html += '<div class="BlockDiv SpellDCBlockDiv">';
+    html +=     '<div class="BlockTitleDiv">Spell DC</div>';
+    html +=     '<div class="BlockContentDiv SpellDCContentDiv ">';
+    html +=         '<div class="BlockRowDiv StatRowDiv">';
+    html +=             span('Span OneLine BoxSpan ModifierSpan Curved', total);
+    html +=             span('Span OneLine',  '&nbsp;=&nbsp;');
+    html +=             span('Span TwoLine Centered', 'BASE<br/>10');
+    html +=             span('Span TwoLine BoxSpan TwoLineBoxSpan', keyAbilityDef.displayName + '<br/>' + getModifierString(keyAbilityMod));
+    html +=             renderTooltip('', span('Span TwoLine BoxSpan TwoLineBoxSpan', 'Prof<br/>' + getModifierString(profMod))
+                                          + data.spellDC.proficiency,
+                                      opsToPre(data.spellDC.ops));
+    html +=         '</div>';
+    html +=     '</div>';
+    html += '</div>';
     return html;
 }
 
@@ -378,7 +410,10 @@ go: function(data) {
     html +=     '</div>';
     html += '</div>'; // ReactionsDiv
 
-
+    html += '<div class="SpellSectionDiv">';
+    html += renderSpellAttackRollBlock(data);
+    html += renderSpellDCBlock(data);
+    html += '</div>'; // SpellSectionDiv
 
     html += '</div>'; // CharacterDiv
     return html;

@@ -80,12 +80,12 @@ function analyzeOp(d, op)
         var reason = enforceProp(op, 'reason', context);
         d.currentHP.value += mod;
         d.currentHP.ops.push(op);
-    } else if (directive == 'classDC') {
+    } else if (directive == 'classDC' || directive == 'spellAttack' || directive == 'spellDC') {
         enforcePositionalArgsCount(op, 0, context);
         var proficiency = enforceProficiency(enforceProp(op, 'proficiency', context), context);
         var reason = enforceProp(op, 'reason', context);
-        setBiggerProficiency(d.classDC, proficiency);
-        d.classDC.ops.push(op);
+        setBiggerProficiency(d[directive], proficiency);
+        d[directive].ops.push(op);
     } else if (directive == 'speed') {
         enforcePositionalArgsCount(op, 1, context);
         var value = op.positionalArgs[0];
@@ -167,6 +167,8 @@ go: function(jsonData) {
         ,"maxHP":{"value":0,"ops":[]}
         ,"abilities":{}
         ,"classDC":{"proficiency":"untrained","ops":[]}
+        ,"spellAttack":{"proficiency":"untrained","ops":[]}
+        ,"spellDC":{"proficiency":"untrained","ops":[]}
         ,"speed": {"value":0,"ops":[]}
         ,"languages": {names:[],"ops":[]}
         ,"feats":{"ancestry":[],"class":[],"skill":[]}

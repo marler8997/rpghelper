@@ -272,3 +272,12 @@ SkillsDiv
     width:300px;
     margin:10px 0;
 }
+
+
+/*
+===============================================================================
+SpellSectionDiv
+===============================================================================
+*/
+.SpellAttackRollBlockDiv { margin-top: 10px; width: 300px; text-align: center }
+.SpellDCBlockDiv         { margin-top: 10px; width: 300px; text-align: center }

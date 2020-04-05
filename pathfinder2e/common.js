@@ -23,6 +23,15 @@ return {
     "will":{"ability":"wisdom","displayName":"Will"}
 },
 
+"abilityDefs": {
+    "strength": {"displayName": "STR"},
+    "dexterity": {"displayName": "DEX"},
+    "constitution": {"displayName": "CON"},
+    "intelligence": {"displayName": "INT"},
+    "wisdom": {"displayName": "WIS"},
+    "charisma": {"displayName": "CHA"},
+},
+
 "skillDefs": {
     "perception": {"key":"wisdom","optional":false},
     "acrobatics": {"key":"dexterity","optional":false},
