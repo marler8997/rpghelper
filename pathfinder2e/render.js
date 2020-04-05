@@ -346,7 +346,7 @@ go: function(data) {
     html +=             '<div class="FieldDiv alignmentDiv">' + labelValue("Alignment", "TODO") + '</div>';
     html +=             '<div class="FieldDiv traitsDiv">' + labelValue("Traits", data.traits) + '</div>';
     html +=         '</div>';
-    html +=         '<div class="RowDiv FieldDiv deityDiv">' + labelValue("Deity", "TODO") + '</div>';
+    html +=         '<div class="RowDiv FieldDiv deityDiv">' + labelValue("Deity", camelCaseToDisplayName(data.deity)) + '</div>';
     html +=     '</div>';
     html +=     '<div class="LevelDiv">';
     html +=         '<div class="RowDiv FieldDiv levelDiv">' + labelValue("Level", "1") + '</div>';
